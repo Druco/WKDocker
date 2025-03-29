@@ -56,22 +56,27 @@ function dockerSetSlot10() {
 
 function dockerDockWindow() {
     var currentDesktop = workspace.currentDesktop;
-    print("ddw1");
+    var topNormalWindow = 0;
+    // print("ddw1A");
 
     if (currentClientIndex < 0 || !clientValid[currentClientIndex]) {
         return;
     }
 
     var activeClient = clientList[currentClientIndex]["WindowID"];
-    print("ddw2", workspace.stackingOrder.length);
-    for (var i = 0; i < workspace.stackingOrder.length-1; ++i) {
-        if (activeClient == workspace.stackingOrder[i]) {
-            print("ddw2A", i);
-        }
-    }
+    // print("ddw2", workspace.stackingOrder.length);
+    print("ddw2", activeClient.onAllDesktops, activeClient.desktops.length);
     print("ddw8A", clientList[currentClientIndex]["SkipTaskBar"], clientList[currentClientIndex]["SkipPager"]);
     // If window is on top, on the current desktop, and not minimized then minimize it
-    if (activeClient == workspace.stackingOrder[workspace.stackingOrder.length - 2] &&
+    for (var i = workspace.stackingOrder.length - 1; i >= 0; --i) {
+        print("ddw8B: ", i, workspace.stackingOrder[i].normalWindow);
+        if (workspace.stackingOrder[i].normalWindow) {
+            topNormalWindow = workspace.stackingOrder[i];
+            break;
+        }
+    }
+
+    if (activeClient == topNormalWindow &&
         (activeClient.onAllDesktops || activeClient.desktops[0] == currentDesktop) &&
         activeClient.minimized == false) {
         print("ddw3");
@@ -128,7 +133,8 @@ function dockerSetupAvailable() {
              "com.wkdocker.wkdocker.DockerDaemon",
              "requestSetup",
              currentClientIndex,
-             function(a,b,c,d,e,f,g) {var ws = clientList[a];
+             function(a,b,c,d,e,f,g,h) {var ws = clientList[a];
+                                        print("Setup Callback", ws["Initialized"]);
                                       if (ws["Initialized"] == false) {
                                           ws["SkipPager"] = b;
                                           ws["SkipTaskBar"] = c;
@@ -136,19 +142,26 @@ function dockerSetupAvailable() {
                                           ws["IconifyIfObscured"] = e;
                                           ws["IconifIfFocusLost"] = f;
                                           ws["LockToDesktop"] = g;
+                                          ws["Sticky"] = h;
                                           ws["Initialized"] = true;
+                                          print("Initial Callback Pre DDW");
                                           dockerDockWindow();
                                       } else {
+                                          // Store to local setup vars
                                           ws["SkipPager"] = b;
-                                          ws["WindowID"].skipSwitcher = b;
                                           ws["SkipTaskBar"] = c;
-                                          ws["WindowID"].skipTaskbar = c;
                                           ws["IconifyIfMinimized"] = d;
                                           ws["IconifyIfObscured"] = e;
                                           ws["IconifIfFocusLost"] = f;
                                           ws["LockToDesktop"] = g;
+                                          ws["Sticky"] = h;
+
+                                          // Activate those that should be done immediately
+                                          ws["WindowID"].skipSwitcher = b;
+                                          ws["WindowID"].skipTaskbar = c;
+                                          ws["WindowID"].onAllDesktops = h;
                                       }
-                                      print("dSA", a, b, c, d, e, f, g);});
+                                      print("dSA", a, b, c, d, e, f, g, h);});
 }
              
     

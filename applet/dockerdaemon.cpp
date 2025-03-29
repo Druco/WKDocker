@@ -73,7 +73,8 @@ void DockerDaemon::requestSetup(int slotIndexIn,
                                 bool &iconifyIfMinimized,
                                 bool &iconifyIfObscured,
                                 bool &iconifyIfFocusLost,
-                                bool &lockToDeskTop)
+                                bool &lockToDeskTop,
+                                bool &sticky)
 {
     slotIndexOut = slotIndexIn;
     ConfigSettings* currentConfig = m_dockedWindows[slotIndexIn]->config;
@@ -84,6 +85,7 @@ void DockerDaemon::requestSetup(int slotIndexIn,
     currentConfig->getConfigItem(ICONIFY_IF_OBSCURED_KEY, iconifyIfObscured);
     currentConfig->getConfigItem(ICONIFY_IF_OBSCURED_KEY, iconifyIfFocusLost);
     currentConfig->getConfigItem(LOCK_TO_DESKTOP_KEY, lockToDeskTop);
+    currentConfig->getConfigItem(STICKY_KEY, sticky);
 }
 
 // BAA - In case we need to keep track for some reason in the future

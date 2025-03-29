@@ -37,7 +37,9 @@ public:
                                   bool &iconifyIfMinimized,
                                   bool &iconifyIfObscured,
                                   bool &iconfiyIfFocusLost,
-                                  bool &lockToDeskTop);
+                                  bool &lockToDeskTop,
+                                  bool &sticky);
+
     Q_SCRIPTABLE void onManualMinimizeChange(int slotIndex, bool minimized);
     Q_SCRIPTABLE void onClientClosed(int slotIndex);
 
