@@ -81,7 +81,7 @@ class TrayItem : public QSystemTrayIcon {
     Q_OBJECT
 
 public:
-    TrayItem(DockerDaemon* parent, int slotNumber, QString windowName, ConfigSettings* configFile);
+    TrayItem(DockerDaemon* parent, int slotNumber, QString windowName, QString windowTitle, ConfigSettings* configFile);
     ~TrayItem();
 
 #if 0
@@ -176,6 +176,7 @@ private:
 #endif
     long m_desktop;
     QString m_dockedAppName;
+    QString m_windowTitle;
 
     QMenu *m_contextMenu;
     QMenu *m_optionsMenu;

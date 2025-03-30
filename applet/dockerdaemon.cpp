@@ -41,7 +41,7 @@ DockerDaemon::~DockerDaemon()
     QDBusConnection::sessionBus().unregisterService("org.andtru.menutest");
 }
 
-void DockerDaemon::addNewWindow(int slotIndex, QString windowName)
+void DockerDaemon::addNewWindow(int slotIndex, QString windowName, QString windowTitle)
 {
     if (slotIndex == ALREADY_DOCKED) {
         QMessageBox::critical(0, gApp->applicationName(), "Window already docked");
@@ -57,7 +57,7 @@ void DockerDaemon::addNewWindow(int slotIndex, QString windowName)
 
     DockedWindow* currentWindow = new DockedWindow;
     currentWindow->config = new ConfigSettings(m_configFile, windowName);
-    currentWindow->item = new TrayItem(this, slotIndex, windowName, currentWindow->config);
+    currentWindow->item = new TrayItem(this, slotIndex, windowName, windowTitle, currentWindow->config);
     m_dockedWindows[slotIndex] = currentWindow;
 
     updateConfiguration(slotIndex);
@@ -100,6 +100,9 @@ void DockerDaemon::onManualMinimizeChange(int slotIndex, bool minimized) {
 void DockerDaemon::onClientClosed(int slotIndex) {
     printf("onClientClosed %d\n", slotIndex);
     DockedWindow* currentWindow = m_dockedWindows[slotIndex];
+
+    if (currentWindow == NULL)
+        return;
     delete currentWindow->config;
     m_junk->show();
     delete currentWindow->item;

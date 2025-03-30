@@ -29,7 +29,7 @@ public:
 
     QMainWindow* m_junk;
 
-    Q_SCRIPTABLE void addNewWindow(int slotIndex, QString windowName);
+    Q_SCRIPTABLE void addNewWindow(int slotIndex, QString windowName, QString windowTitle);
     Q_SCRIPTABLE void requestSetup(int slotIndexIn,
                                   int &slotIndexOut,
                                   bool &skipPager,

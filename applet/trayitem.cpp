@@ -27,15 +27,16 @@
 
 #include "trayitem.h"
 
-TrayItem::TrayItem(DockerDaemon* parent, int slotIndex, QString windowName, ConfigSettings* configFile) :
+TrayItem::TrayItem(DockerDaemon* parent, int slotIndex, QString windowName, QString windowTitle, ConfigSettings* configFile) :
     m_configFile(configFile), m_parent(parent)
 {
     m_customIcon = false;
     m_slotIndex = slotIndex;
 
     m_dockedAppName = windowName;
+    m_windowTitle = windowTitle;
 
-//     updateTitle();
+    updateTitle();
 //     updateIcon();
 
     createContextMenu();
@@ -45,9 +46,8 @@ TrayItem::TrayItem(DockerDaemon* parent, int slotIndex, QString windowName, Conf
 
     QString path;
     configFile->getConfigItem(CUSTOM_ICON_KEY, path);
-    if (!path.isEmpty()) {
-        setCustomIcon(path);
-    }
+    setCustomIcon(path);
+
 #if 0
 //     updateToggleAction();
 
@@ -629,31 +629,15 @@ void TrayItem::readDockedAppName() {
 #endif
 }
 
-#if 0
 /*
  * Update the title in the tooltip.
  */
 void TrayItem::updateTitle() {
-    if (isBadWindow()) {
-        return;
-    }
-
-    Display *display = QX11Info::display();
-    char *windowName = 0;
-    QString title;
-
-    XFetchName(display, m_window, &windowName);
-    title = windowName;
-    if (windowName) {
-        XFree(windowName);
-    }
-
-    setToolTip(QString("%1 [%2]").arg(title).arg(m_dockedAppName));
+    setToolTip(QString("%1 [%2]").arg(m_windowTitle).arg(m_dockedAppName));
     if (m_settings.iBalloonTimeout > 0) {
-        showMessage(m_dockedAppName, title, QSystemTrayIcon::Information, m_settings.iBalloonTimeout);
+        // showMessage(m_dockedAppName,/* title,*/ QSystemTrayIcon::Information, m_settings.iBalloonTimeout);
     }
 }
-#endif
 
 #if 0
 void TrayItem::updateIcon() {

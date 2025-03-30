@@ -117,8 +117,10 @@ function dockerDockWindow() {
 }
 
 function dockerUndockWindow() {
+    print("DDW0 *************** ");
     if (clientValid[currentClientIndex] == true) {
         var activeClient = clientList[currentClientIndex]["WindowID"];
+
         activeClient.minimized = false;
         clientList[currentClientIndex]["Minimized"] = false;
         activeClient.skipTaskbar = false;
@@ -178,7 +180,6 @@ function pickWindow() {
     for (var i = 0; i < NUM_SLOTS; ++i) {
         print("pW loop1A: ", i, clientValid[i], clientList[i]["WindowID"]);
         if (clientValid[i] == true && clientList[i]["WindowID"] == selectedWindow) {
-            print("pW loop1");
             callDBus("org.andtru.menutest", 
                      "/docker", 
                      "com.wkdocker.wkdocker.DockerDaemon", 
@@ -198,6 +199,8 @@ function pickWindow() {
     }
         
     print("pW post loop1");
+    print("pW post loop1A", selectedWindow.caption);
+
     // put the selected window into  the first empty slot 
     for (var i = 0; i < NUM_SLOTS; ++i) {
         print("pw loop2A: ", i, clientValid[i]);
@@ -215,12 +218,16 @@ function pickWindow() {
             callDBus("org.andtru.menutest", 
                      "/docker", 
                      "com.wkdocker.wkdocker.DockerDaemon", 
-                     "addNewWindow", currentClientIndex, clientList[i]["WindowID"].resourceClass);
+                     "addNewWindow", currentClientIndex,
+                                     clientList[i]["WindowID"].resourceClass,
+                                     clientList[i]["WindowID"].caption);
             selectedWindow.minimizedChanged.connect(onMinimize);
             print("switch", i);
             switch(i) {
             case 0:
+                print("pw4", selectedWindow.closed);
                 selectedWindow.closed.connect(onClose0);
+                print("pw4A", selectedWindow.closed);
                 break;
             case 1:
                 selectedWindow.closed.connect(onClose1);
