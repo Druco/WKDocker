@@ -11,6 +11,8 @@ var firefoxClient;
 const NUM_SLOTS = 10;
 const ALREADY_DOCKED = -1;
 const SLOTS_FULL = -2;
+const NOT_NORMAL_WINDOW = -3;
+
 var clientList = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
 var clientValid = [false, false, false, false, false, false, false, false, false, false];
 var currentClientIndex = -1;
@@ -185,6 +187,16 @@ function pickWindow() {
         }
     }
 
+    if (!selectedWindow.normalWindow)
+    {
+        print("Non normal window");
+        callDBus("org.andtru.menutest", 
+                 "/docker", 
+                 "com.wkdocker.wkdocker.DockerDaemon", 
+                 "addNewWindow", NOT_NORMAL_WINDOW, selectedWindow.resourceClass);
+        return;
+    }
+        
     print("pW post loop1");
     // put the selected window into  the first empty slot 
     for (var i = 0; i < NUM_SLOTS; ++i) {

@@ -6,6 +6,7 @@
 #define NUM_SLOTS 10
 #define ALREADY_DOCKED -1
 #define SLOTS_FULL -2
+#define NOT_NORMAL_WINDOW -3
 
 class Constants : public QObject
 {

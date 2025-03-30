@@ -45,8 +45,13 @@ void DockerDaemon::addNewWindow(int slotIndex, QString windowName)
 {
     if (slotIndex == ALREADY_DOCKED) {
         QMessageBox::critical(0, gApp->applicationName(), "Window already docked");
+        return;
     } else if (slotIndex == SLOTS_FULL) {
         QMessageBox::critical(0, gApp->applicationName(), "Maximum number of windows already docked");
+        return;
+    } else if (slotIndex == NOT_NORMAL_WINDOW) {
+        QMessageBox::critical(0, gApp->applicationName(), "Selected window isn't a normal window");
+        return;
     } else if (slotIndex < 0 || slotIndex >= NUM_SLOTS)
         return;
 
