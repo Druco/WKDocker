@@ -1,0 +1,6 @@
+# Production
+applet/build
+applet/CMakeLists.txt.user
+
+# Emacs Backup files
+*~
