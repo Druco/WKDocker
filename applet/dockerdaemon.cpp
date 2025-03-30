@@ -98,7 +98,6 @@ void DockerDaemon::onManualMinimizeChange(int slotIndex, bool minimized) {
 }
 
 void DockerDaemon::onClientClosed(int slotIndex) {
-    printf("onClientClosed %d\n", slotIndex);
     DockedWindow* currentWindow = m_dockedWindows[slotIndex];
 
     if (currentWindow == NULL)
@@ -112,7 +111,6 @@ void DockerDaemon::onClientClosed(int slotIndex) {
 }
 
 void DockerDaemon::onCaptionChanged(int slotIndex, QString newTitle) {
-    printf("onCaptionChanged\n");
     m_dockedWindows[slotIndex]->item->changeWindowTitle(newTitle);
 }
 

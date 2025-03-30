@@ -59,19 +59,15 @@ function dockerSetSlot10() {
 function dockerDockWindow() {
     var currentDesktop = workspace.currentDesktop;
     var topNormalWindow = 0;
-    // print("ddw1A");
 
     if (currentClientIndex < 0 || !clientValid[currentClientIndex]) {
         return;
     }
 
     var activeClient = clientList[currentClientIndex]["WindowID"];
-    // print("ddw2", workspace.stackingOrder.length);
-    print("ddw2", activeClient.onAllDesktops, activeClient.desktops.length);
-    print("ddw8A", clientList[currentClientIndex]["SkipTaskBar"], clientList[currentClientIndex]["SkipPager"]);
+
     // If window is on top, on the current desktop, and not minimized then minimize it
     for (var i = workspace.stackingOrder.length - 1; i >= 0; --i) {
-        print("ddw8B: ", i, workspace.stackingOrder[i].normalWindow);
         if (workspace.stackingOrder[i].normalWindow) {
             topNormalWindow = workspace.stackingOrder[i];
             break;
@@ -81,7 +77,6 @@ function dockerDockWindow() {
     if (activeClient == topNormalWindow &&
         (activeClient.onAllDesktops || activeClient.desktops[0] == currentDesktop) &&
         activeClient.minimized == false) {
-        print("ddw3");
         activeClient.minimized = true;
         clientList[currentClientIndex]["Minimized"] = true;
         activeClient.skipTaskbar = true;
@@ -89,7 +84,6 @@ function dockerDockWindow() {
 
     // If window is visible on current desktop but not active, make it active
     } else if ((activeClient.onAllDesktops || activeClient.desktops[0] == currentDesktop) && !activeClient.minimized) {
-        print("ddw6");
         workspace.activeWindow = activeClient;
         activeClient.skipTaskbar = clientList[currentClientIndex]["SkipTaskBar"];
         activeClient.skipSwitcher = clientList[currentClientIndex]["SkipPager"];
@@ -97,11 +91,8 @@ function dockerDockWindow() {
     // to the current desktop (LockToDesktop == false) or switch to the desktop it is on
     } else
     {
-        print("ddw4", clientList[currentClientIndex]["LockToDesktop"]);
-
         if (clientList[currentClientIndex]["LockToDesktop"]){
             if (!activeClient.onAllDesktops && activeClient.moveable) {
-                print("ddw5A");
                 workspace.currentDesktop = activeClient.desktops[0];
             }
         } else {
@@ -117,7 +108,6 @@ function dockerDockWindow() {
 }
 
 function dockerUndockWindow() {
-    print("DDW0 *************** ");
     if (clientValid[currentClientIndex] == true) {
         var activeClient = clientList[currentClientIndex]["WindowID"];
 
@@ -131,14 +121,12 @@ function dockerUndockWindow() {
 }
 
 function dockerSetupAvailable() {
-    print("dSA entry");
     callDBus("org.andtru.menutest",
              "/docker",
              "com.wkdocker.wkdocker.DockerDaemon",
              "requestSetup",
              currentClientIndex,
              function(a,b,c,d,e,f,g,h) {var ws = clientList[a];
-                                        print("Setup Callback", ws["Initialized"]);
                                       if (ws["Initialized"] == false) {
                                           ws["SkipPager"] = b;
                                           ws["SkipTaskBar"] = c;
@@ -148,7 +136,6 @@ function dockerSetupAvailable() {
                                           ws["LockToDesktop"] = g;
                                           ws["Sticky"] = h;
                                           ws["Initialized"] = true;
-                                          print("Initial Callback Pre DDW");
                                           dockerDockWindow();
                                       } else {
                                           // Store to local setup vars
@@ -165,7 +152,6 @@ function dockerSetupAvailable() {
                                           ws["WindowID"].skipTaskbar = c;
                                           ws["WindowID"].onAllDesktops = h;
                                       }
-                                      print("dSA", a, b, c, d, e, f, g, h);});
 }
              
     
@@ -174,11 +160,9 @@ function dockerSetupAvailable() {
 // active window
 function pickWindow() {
     var selectedWindow = workspace.activeWindow;
-    print("pW entry");
 
     // Check to make sure the window hasn't already been docked
     for (var i = 0; i < NUM_SLOTS; ++i) {
-        print("pW loop1A: ", i, clientValid[i], clientList[i]["WindowID"]);
         if (clientValid[i] == true && clientList[i]["WindowID"] == selectedWindow) {
             callDBus("org.andtru.menutest", 
                      "/docker", 
@@ -190,7 +174,6 @@ function pickWindow() {
 
     if (!selectedWindow.normalWindow)
     {
-        print("Non normal window");
         callDBus("org.andtru.menutest", 
                  "/docker", 
                  "com.wkdocker.wkdocker.DockerDaemon", 
@@ -198,14 +181,9 @@ function pickWindow() {
         return;
     }
         
-    print("pW post loop1");
-    print("pW post loop1A", selectedWindow.caption);
-
     // put the selected window into  the first empty slot 
     for (var i = 0; i < NUM_SLOTS; ++i) {
-        print("pw loop2A: ", i, clientValid[i]);
         if (clientValid[i] == false) {
-            print("pW loop2");
             currentClientIndex = i;
             clientList[i] = {};
             clientList[i]["WindowID"] = selectedWindow;
@@ -222,7 +200,7 @@ function pickWindow() {
                                      clientList[i]["WindowID"].resourceClass,
                                      clientList[i]["WindowID"].caption);
             selectedWindow.minimizedChanged.connect(onMinimize);
-            print("switch", i);
+
             switch(i) {
             case 0:
                 selectedWindow.closed.connect(onClose0);
@@ -269,8 +247,6 @@ function pickWindow() {
         }
     }
     // There wasn't an empty slot so notify the companion app
-    print("pW error Exit");
-
     callDBus("org.andtru.menutest", 
              "/docker", 
              "com.wkdocker.wkdocker.DockerDaemon", 
@@ -278,13 +254,10 @@ function pickWindow() {
 }
 
 function onMinimize() {
-    print("in onMinimize");
-
     //Find if one of our windows has changed
     for (var i=0; i<NUM_SLOTS; ++i) {
         testWindow = clientList[i]["WindowID"];
         if (clientValid[i] && testWindow.minimized != clientList[i]["Minimized"]) {
-            print(testWindow,  workspace.activeWindow);
             clientList[i]["Minimized"] = testWindow.minimized;
             if (testWindow.minimized == true) {
                 testWindow.skipTaskbar = true;
@@ -316,7 +289,6 @@ function onClose9() {onClose(9);}
 function onClose(slotIndex) {
     clientList[slotIndex] = {};
     clientValid[slotIndex] = false;
-    print("onClose", slotIndex);
     callDBus("org.andtru.menutest",
              "/docker",
              "com.wkdocker.wkdocker.DockerDaemon",
@@ -336,7 +308,6 @@ function onCaptionChanged8() {onCaptionChanged(8);}
 function onCaptionChanged9() {onCaptionChanged(9);}
 
 function onCaptionChanged(slotIndex) {
-    print("onCaptionChanged", slotIndex, clientList[slotIndex].caption);
     callDBus("org.andtru.menutest",
              "/docker",
              "com.wkdocker.wkdocker.DockerDaemon",
@@ -360,7 +331,6 @@ function dockerCloseWindow() {
     currentWindow.closeWindow();
 }
 
-print("Inside minimizeFirefox", "Again");
 registerShortcut("dockerSetSlot1", "dockerSetSlot1", "", dockerSetSlot1);
 registerShortcut("dockerSetSlot2", "dockerSetSlot2", "", dockerSetSlot2);
 registerShortcut("dockerSetSlot3", "dockerSetSlot3", "", dockerSetSlot3);
