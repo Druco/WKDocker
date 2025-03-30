@@ -23,6 +23,7 @@ add_executable(WKDockerApp
   trayitem.cpp
   configsettings.h
   configsettings.cpp
+  resources/resources.qrc
 )
 target_link_libraries(WKDockerApp
                       Qt${QT_VERSION_MAJOR}::Core
