@@ -111,6 +111,12 @@ void DockerDaemon::onClientClosed(int slotIndex) {
     m_dockedWindows[slotIndex] = NULL;
 }
 
+void DockerDaemon::onCaptionChanged(int slotIndex, QString newTitle) {
+    printf("onCaptionChanged\n");
+    m_dockedWindows[slotIndex]->item->changeWindowTitle(newTitle);
+}
+
+
 void DockerDaemon::toggleHideShow(int slotIndex) {
     m_iface.call("invokeShortcut", getSlotCommand(slotIndex));
     m_iface.call("invokeShortcut", "dockerDockWindow");

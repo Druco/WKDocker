@@ -225,36 +225,44 @@ function pickWindow() {
             print("switch", i);
             switch(i) {
             case 0:
-                print("pw4", selectedWindow.closed);
                 selectedWindow.closed.connect(onClose0);
-                print("pw4A", selectedWindow.closed);
+                selectedWindow.captionChanged.connect(onCaptionChanged0);
                 break;
             case 1:
                 selectedWindow.closed.connect(onClose1);
+                selectedWindow.captionChanged.connect(onCaptionChanged1);
                 break;
             case 2:
                 selectedWindow.closed.connect(onClose2);
+                selectedWindow.captionChanged.connect(onCaptionChanged2);
                 break;
             case 3:
                 selectedWindow.closed.connect(onClose3);
+                selectedWindow.captionChanged.connect(onCaptionChanged3);
                 break;
             case 4:
                 selectedWindow.closed.connect(onClose4);
+                selectedWindow.captionChanged.connect(onCaptionChanged4);
                 break;
             case 5:
                 selectedWindow.closed.connect(onClose5);
+                selectedWindow.captionChanged.connect(onCaptionChanged5);
                 break;
             case 6:
                 selectedWindow.closed.connect(onClose6);
+                selectedWindow.captionChanged.connect(onCaptionChanged6);
                 break;
             case 7:
                 selectedWindow.closed.connect(onClose7);
+                selectedWindow.captionChanged.connect(onCaptionChanged7);
                 break;
             case 8:
                 selectedWindow.closed.connect(onClose8);
+                selectedWindow.captionChanged.connect(onCaptionChanged8);
                 break;
             case 9:
                 selectedWindow.closed.connect(onClose9);
+                selectedWindow.captionChanged.connect(onCaptionChanged9);
                 break;
             }
             return;
@@ -315,7 +323,28 @@ function onClose(slotIndex) {
              "onClientClosed",
              currentClientIndex);
 }
-    
+
+function onCaptionChanged0() {onCaptionChanged(0);}
+function onCaptionChanged1() {onCaptionChanged(1);}
+function onCaptionChanged2() {onCaptionChanged(2);}
+function onCaptionChanged3() {onCaptionChanged(3);}
+function onCaptionChanged4() {onCaptionChanged(4);}
+function onCaptionChanged5() {onCaptionChanged(5);}
+function onCaptionChanged6() {onCaptionChanged(6);}
+function onCaptionChanged7() {onCaptionChanged(7);}
+function onCaptionChanged8() {onCaptionChanged(8);}
+function onCaptionChanged9() {onCaptionChanged(9);}
+
+function onCaptionChanged(slotIndex) {
+    print("onCaptionChanged", slotIndex, clientList[slotIndex].caption);
+    callDBus("org.andtru.menutest",
+             "/docker",
+             "com.wkdocker.wkdocker.DockerDaemon",
+             "onCaptionChanged",
+             currentClientIndex,
+             clientList[slotIndex]["WindowID"].caption
+            );
+}
 
 // Temporary only test version
 function undockAll() {

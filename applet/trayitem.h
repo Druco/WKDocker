@@ -98,6 +98,7 @@ public:
     void doSkipTaskbar();
     void doSkipPager();
     void doSticky();
+    void changeWindowTitle(QString newTitle);
 
 public slots:
     void closeWindow();

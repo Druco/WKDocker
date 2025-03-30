@@ -825,6 +825,11 @@ bool TrayItem::isBadWindow() {
     return false;
 }
 
+void TrayItem::changeWindowTitle(QString newTitle) {
+    m_windowTitle = newTitle;
+    updateTitle();
+}
+
 // Checks to see if the virtual desktop the window is on is currently 
 // displayed. Returns true if it is, otherwise false
 bool TrayItem::isOnCurrentDesktop() {

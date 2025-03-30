@@ -42,6 +42,7 @@ public:
 
     Q_SCRIPTABLE void onManualMinimizeChange(int slotIndex, bool minimized);
     Q_SCRIPTABLE void onClientClosed(int slotIndex);
+    Q_SCRIPTABLE void onCaptionChanged(int slotIndex, QString newTitle);
 
     void updateConfiguration(int slotIndex);
     void doUndock(int slotIndex);
