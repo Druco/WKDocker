@@ -66,8 +66,8 @@ void ConfigSettings::getConfigItem(QString key, bool& val)
         val = m_iconifyIfFocusLost;
     else if (key == LOCK_TO_DESKTOP_KEY)
         val = m_lockToDesktop;
-    else if (key == BALLOON_TITLE_CHANGE_KEY) { printf("get balloon val %d\n", m_balloonOnTitleChange);
-        val = m_balloonOnTitleChange; }
+    else if (key == BALLOON_TITLE_CHANGE_KEY)
+        val = m_balloonOnTitleChange;
     else
         val = false;
 }
@@ -94,9 +94,8 @@ void ConfigSettings::setConfigItem(QString key, bool val)
         m_iconifyIfFocusLost = val;
     else if (key == LOCK_TO_DESKTOP_KEY)
         m_lockToDesktop = val;
-    else if (key == BALLOON_TITLE_CHANGE_KEY) {
-        printf("set balloon config %d\n", val);
-        m_balloonOnTitleChange = val; }
+    else if (key == BALLOON_TITLE_CHANGE_KEY)
+        m_balloonOnTitleChange = val;
 }
 
 void ConfigSettings::setConfigItem(QString key, QString val)

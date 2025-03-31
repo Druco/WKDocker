@@ -212,7 +212,6 @@ void TrayItem::updateTitle()
     bool balloonOnTitleChange;
     m_configFile->getConfigItem(BALLOON_TITLE_CHANGE_KEY, balloonOnTitleChange);
     if (balloonOnTitleChange) {
-        printf("balloon title\n");
         showMessage(m_dockedAppName, m_windowTitle, QSystemTrayIcon::Information, 4000);
     }
 }
