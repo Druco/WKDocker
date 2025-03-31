@@ -26,7 +26,7 @@ ConfigSettings::ConfigSettings(QSettings& configFile, QString windowName) :
 
     m_configFile.beginGroup("_GLOBAL_DEFAULTS");
     m_customIcon           = m_configFile.value(CUSTOM_ICON_KEY,           DEFAULT_CustomIcon).toString();
-    m_balloonTimeout       = m_configFile.value(BALLOON_TIMEOUT_KEY,       DEFAULT_BalloonTimeout).toInt();
+    m_balloonOnTitleChange = m_configFile.value(BALLOON_TITLE_CHANGE_KEY,  DEFAULT_BalloonOnTitleChange).toBool();
     m_sticky               = m_configFile.value(STICKY_KEY,                DEFAULT_Sticky).toBool();
     m_skipPager            = m_configFile.value(SKIP_PAGER_KEY,            DEFAULT_SkipPager).toBool();
     m_skipTaskbar          = m_configFile.value(SKIP_TASKBAR_KEY,          DEFAULT_SkipTaskbar).toBool();
@@ -38,7 +38,7 @@ ConfigSettings::ConfigSettings(QSettings& configFile, QString windowName) :
 
     m_configFile.beginGroup(m_windowName);
     m_customIcon           = m_configFile.value(CUSTOM_ICON_KEY,           m_customIcon).toString();
-    m_balloonTimeout       = m_configFile.value(BALLOON_TIMEOUT_KEY,       m_balloonTimeout).toInt();
+    m_balloonOnTitleChange = m_configFile.value(BALLOON_TITLE_CHANGE_KEY,  m_balloonOnTitleChange).toBool();
     m_sticky               = m_configFile.value(STICKY_KEY,                m_sticky).toBool();
     m_skipPager            = m_configFile.value(SKIP_PAGER_KEY,            m_skipPager).toBool();
     m_skipTaskbar          = m_configFile.value(SKIP_TASKBAR_KEY,          m_skipTaskbar).toBool();
@@ -49,12 +49,6 @@ ConfigSettings::ConfigSettings(QSettings& configFile, QString windowName) :
     m_configFile.endGroup();
 
 };
-
-void ConfigSettings::getConfigItem(QString key, int& val)
-{
-    if (key == BALLOON_TIMEOUT_KEY)
-        val = m_balloonTimeout;
-}
 
 void ConfigSettings::getConfigItem(QString key, bool& val)
 {
@@ -72,18 +66,16 @@ void ConfigSettings::getConfigItem(QString key, bool& val)
         val = m_iconifyIfFocusLost;
     else if (key == LOCK_TO_DESKTOP_KEY)
         val = m_lockToDesktop;
+    else if (key == BALLOON_TITLE_CHANGE_KEY) { printf("get balloon val %d\n", m_balloonOnTitleChange);
+        val = m_balloonOnTitleChange; }
+    else
+        val = false;
 }
 
 void ConfigSettings::getConfigItem(QString key, QString& val)
 {
     if (key == CUSTOM_ICON_KEY)
         val = m_customIcon;
-}
-
-void ConfigSettings::setConfigItem(QString key, int val)
-{
-    if (key == BALLOON_TIMEOUT_KEY)
-        m_balloonTimeout = val;
 }
 
 void ConfigSettings::setConfigItem(QString key, bool val)
@@ -102,6 +94,9 @@ void ConfigSettings::setConfigItem(QString key, bool val)
         m_iconifyIfFocusLost = val;
     else if (key == LOCK_TO_DESKTOP_KEY)
         m_lockToDesktop = val;
+    else if (key == BALLOON_TITLE_CHANGE_KEY) {
+        printf("set balloon config %d\n", val);
+        m_balloonOnTitleChange = val; }
 }
 
 void ConfigSettings::setConfigItem(QString key, QString val)
@@ -114,7 +109,6 @@ void ConfigSettings::saveSettingsGlobal()
 {
     m_configFile.beginGroup("_GLOBAL_DEFAULTS");
     m_configFile.setValue(CUSTOM_ICON_KEY,    m_customIcon);
-    m_configFile.setValue(BALLOON_TIMEOUT_KEY,       m_balloonTimeout);
     m_configFile.setValue(STICKY_KEY,                m_sticky);
     m_configFile.setValue(SKIP_PAGER_KEY,            m_skipPager);
     m_configFile.setValue(SKIP_TASKBAR_KEY,          m_skipTaskbar);
@@ -122,6 +116,7 @@ void ConfigSettings::saveSettingsGlobal()
     m_configFile.setValue(ICONIFY_IF_OBSCURED_KEY,   m_iconifyIfObscured);
     m_configFile.setValue(ICONIFY_IF_FOCUS_LOST_KEY, m_iconifyIfFocusLost);
     m_configFile.setValue(LOCK_TO_DESKTOP_KEY,       m_lockToDesktop);
+    m_configFile.setValue(BALLOON_TITLE_CHANGE_KEY,  m_balloonOnTitleChange);
     m_configFile.endGroup();
 }
 
@@ -129,7 +124,6 @@ void ConfigSettings::saveSettingsApp()
 {
     m_configFile.beginGroup(m_windowName);
     m_configFile.setValue(CUSTOM_ICON_KEY,    m_customIcon);
-    m_configFile.setValue(BALLOON_TIMEOUT_KEY,       m_balloonTimeout);
     m_configFile.setValue(STICKY_KEY,                m_sticky);
     m_configFile.setValue(SKIP_PAGER_KEY,            m_skipPager);
     m_configFile.setValue(SKIP_TASKBAR_KEY,          m_skipTaskbar);
@@ -137,6 +131,7 @@ void ConfigSettings::saveSettingsApp()
     m_configFile.setValue(ICONIFY_IF_OBSCURED_KEY,   m_iconifyIfObscured);
     m_configFile.setValue(ICONIFY_IF_FOCUS_LOST_KEY, m_iconifyIfFocusLost);
     m_configFile.setValue(LOCK_TO_DESKTOP_KEY,       m_lockToDesktop);
+    m_configFile.setValue(BALLOON_TITLE_CHANGE_KEY,  m_balloonOnTitleChange);
     m_configFile.endGroup();
 }
 

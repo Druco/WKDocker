@@ -24,7 +24,7 @@
 #include "constants.h"
 
 #define CUSTOM_ICON_KEY           "CustomIcon"
-#define BALLOON_TIMEOUT_KEY       "BalloonTimeout"
+#define BALLOON_TITLE_CHANGE_KEY  "BalloonTitle"
 #define STICKY_KEY                "Sticky"
 #define SKIP_PAGER_KEY            "SkipPager"
 #define SKIP_TASKBAR_KEY          "SkipTaskbar"
@@ -42,6 +42,7 @@
 #define DEFAULT_IconifyIfObscured   false
 #define DEFAULT_IconifyIfFocusLost  false
 #define DEFAULT_LockToDesktop       true       // Restore to original desktop (default) else restore to active desktop
+#define DEFAULT_BalloonOnTitleChange false
 
 
 class ConfigSettings : public QObject
@@ -62,7 +63,6 @@ private:
     QSettings& m_configFile;
     QString m_windowName;
     QString m_customIcon;
-    int m_balloonTimeout;
     bool m_sticky;
     bool m_skipTaskbar;
     bool m_skipPager;
@@ -70,5 +70,6 @@ private:
     bool m_iconifyIfObscured;
     bool m_iconifyIfFocusLost;
     bool m_lockToDesktop;
+    bool m_balloonOnTitleChange;
 };
 #endif // CONFIGSETTINGS_H_INCLUDED_

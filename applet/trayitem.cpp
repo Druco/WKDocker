@@ -55,20 +55,6 @@ TrayItem::~TrayItem()
     delete m_contextMenu;
 }
 
-int TrayItem::nonZeroBalloonTimeout()
-{
-#if 0
-    QString fmt = "%1/BalloonTimeout";
-    int bto = m_config.value(fmt.arg(m_dockedAppName), 0).toInt();
-    if (!bto) {
-        bto = m_config.value(fmt.arg("_GLOBAL_DEFAULTS"), 0).toInt();
-    }
-    return bto ? bto : DEFAULT_BalloonTimeout;
-#else
-    return 1;
-#endif
-}
-
 #if 0
 TrayItemConfig TrayItem::readConfigGlobals()
 {
@@ -90,14 +76,10 @@ TrayItemConfig TrayItem::readConfigGlobals()
 }
 #endif
 
-#if 0
 void TrayItem::saveSettingsGlobal()
 {
-    m_config.beginGroup("_GLOBAL_DEFAULTS");
-      saveSettings();
-    m_config.endGroup();
+    m_configFile->saveSettingsGlobal();
 }
-#endif
 
 void TrayItem::saveSettingsApp()
 {
@@ -187,26 +169,23 @@ void TrayItem::setLockToDesktop(bool value)
     m_parent->updateConfiguration(m_slotIndex);
 }
 
+#if 0
 void TrayItem::setBalloonTimeout(int value)
 {
-#if 0
     if (value < 0) {
         value = 0;
     }
     m_settings.iBalloonTimeout = value;
     m_actionBalloonTitleChanges->setChecked(value ? true : false);
-#endif
 }
-
-void TrayItem::setBalloonTimeout(bool value)
-{
-#if 0
-    if (!value) {
-        setBalloonTimeout(-1);
-    } else {
-        setBalloonTimeout(nonZeroBalloonTimeout());
-    }
 #endif
+
+void TrayItem::setBalloonOnTitleChange(bool value)
+{
+    m_actionBalloonOnTitleChange->setChecked(value);
+    m_configFile->setConfigItem(BALLOON_TITLE_CHANGE_KEY, value);
+    // Don't need to update parent configuration because
+    // this only affects the tray icon
 }
 
 void TrayItem::toggleWindow()
@@ -230,8 +209,11 @@ void TrayItem::undockAll()
 void TrayItem::updateTitle()
 {
     setToolTip(QString("%1 [%2]").arg(m_windowTitle).arg(m_dockedAppName));
-    if (m_settings.iBalloonTimeout > 0) {
-        // BAA showMessage(m_dockedAppName,/* title,*/ QSystemTrayIcon::Information, m_settings.iBalloonTimeout);
+    bool balloonOnTitleChange;
+    m_configFile->getConfigItem(BALLOON_TITLE_CHANGE_KEY, balloonOnTitleChange);
+    if (balloonOnTitleChange) {
+        printf("balloon title\n");
+        showMessage(m_dockedAppName, m_windowTitle, QSystemTrayIcon::Information, 4000);
     }
 }
 
@@ -289,12 +271,12 @@ void TrayItem::createContextMenu()
     connect(m_actionLockToDesktop, SIGNAL(toggled(bool)), this, SLOT(setLockToDesktop(bool)));
     m_optionsMenu->addAction(m_actionLockToDesktop);
 
-    m_actionBalloonTitleChanges = new QAction(tr("Balloon title changes"), m_optionsMenu);
-    m_actionBalloonTitleChanges->setCheckable(true);
-    m_configFile->getConfigItem(BALLOON_TIMEOUT_KEY, intVal);
-    m_actionBalloonTitleChanges->setChecked(intVal ? true : false);
-    connect(m_actionBalloonTitleChanges, SIGNAL(triggered(bool)), this, SLOT(setBalloonTimeout(bool)));
-    m_optionsMenu->addAction(m_actionBalloonTitleChanges);
+    m_actionBalloonOnTitleChange = new QAction(tr("Balloon on title changes"), m_optionsMenu);
+    m_actionBalloonOnTitleChange->setCheckable(true);
+    m_configFile->getConfigItem(BALLOON_TITLE_CHANGE_KEY, boolVal);
+    m_actionBalloonOnTitleChange->setChecked(boolVal);
+    connect(m_actionBalloonOnTitleChange, SIGNAL(triggered(bool)), this, SLOT(setBalloonOnTitleChange(bool)));
+    m_optionsMenu->addAction(m_actionBalloonOnTitleChange);
 
     m_contextMenu->addMenu(m_optionsMenu);
 
@@ -308,7 +290,7 @@ void TrayItem::createContextMenu()
     m_defaultsMenu->addAction(m_actionSaveSettingsApp);
 
     m_actionSaveSettingsGlobal = new QAction(tr("Global (all new)"), m_defaultsMenu);
-    // connect(m_actionSaveSettingsGlobal, SIGNAL(triggered()), this, SLOT(saveSettingsGlobal()));
+    connect(m_actionSaveSettingsGlobal, SIGNAL(triggered()), this, SLOT(saveSettingsGlobal()));
     m_defaultsMenu->addAction(m_actionSaveSettingsGlobal);
     connect(m_actionSaveSettingsApp, SIGNAL(triggered()), this, SLOT(saveSettingsApp()));
 

@@ -89,14 +89,13 @@ public slots:
     void setSticky(bool value);
     void setIconifyMinimized(bool value);
     void setLockToDesktop(bool value);
-    void setBalloonTimeout(int value);
-    void setBalloonTimeout(bool value);
+    void setBalloonOnTitleChange(bool value);
 
 private slots:
     void toggleWindow();
     void doUndock();
     void undockAll();
-//    void saveSettingsGlobal();
+    void saveSettingsGlobal();
     void saveSettingsApp();
 
 signals:
@@ -129,7 +128,7 @@ private:
     QAction *m_actionSticky;
     QAction *m_actionIconifyMinimized;
     QAction *m_actionLockToDesktop;
-    QAction *m_actionBalloonTitleChanges;
+    QAction *m_actionBalloonOnTitleChange;
     QAction *m_actionToggle;
     QMenu *m_defaultsMenu;
     QAction *m_actionSaveSettingsApp;
