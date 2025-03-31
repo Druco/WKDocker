@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QDBusInterface>
 #include <QMainWindow>
+#include <QQueue>
 
 #include "constants.h"
 #include "trayitem.h"
@@ -43,6 +44,7 @@ public:
     Q_SCRIPTABLE void onManualMinimizeChange(int slotIndex, bool minimized);
     Q_SCRIPTABLE void onClientClosed(int slotIndex);
     Q_SCRIPTABLE void onCaptionChanged(int slotIndex, QString newTitle);
+    Q_SCRIPTABLE void requestCommand(int &slotIndex, int &command);
 
     void updateConfiguration(int slotIndex);
     void doUndock(int slotIndex);
@@ -55,5 +57,20 @@ private:
     const char* getSlotCommand(int slotIndex);
     DockedWindow* m_dockedWindows[NUM_SLOTS];
 
+enum Command {
+    ToggleWindowState = 4001,
+    UndockWindow,
+    UndockAll,
+    CloseWindow,
+    SetupAvailable
+};
+
+struct CommandStruct
+{
+    int slotIndex;
+    Command command;
+};
+
+QQueue<CommandStruct> m_commandQueue;
 };
 #endif // DOCKERDAEMON_H_INCLUDED

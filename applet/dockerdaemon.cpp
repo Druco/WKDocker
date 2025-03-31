@@ -66,11 +66,26 @@ void DockerDaemon::addNewWindow(int slotIndex, QString windowName, QString windo
 void DockerDaemon::updateConfiguration(int slotIndex)
 {
     if (m_iface.isValid()) {
-        m_iface.call("invokeShortcut", getSlotCommand(slotIndex));
-        m_iface.call("invokeShortcut", "dockerSetupAvailable");
+        const CommandStruct c = {slotIndex, SetupAvailable};
+        m_commandQueue.enqueue(c);
+        m_iface.call("invokeShortcut", "dockerCommandAvailable");
         return;
     }
-}    
+}
+
+void DockerDaemon::requestCommand(int &slotIndex, int &command) {
+    if (!m_commandQueue.isEmpty())
+    {
+        struct CommandStruct commandStruct = m_commandQueue.dequeue();
+        slotIndex = commandStruct.slotIndex;
+        command = commandStruct.command;
+    }
+    else
+    {
+        printf("requestCommand: queue was empty\n");
+    }
+};
+
 void DockerDaemon::requestSetup(int slotIndexIn,
                                 int &slotIndexOut,
                                 bool &skipPager,
@@ -116,14 +131,14 @@ void DockerDaemon::onCaptionChanged(int slotIndex, QString newTitle) {
 
 
 void DockerDaemon::toggleHideShow(int slotIndex) {
-    m_iface.call("invokeShortcut", getSlotCommand(slotIndex));
-    m_iface.call("invokeShortcut", "dockerDockWindow");
+    m_commandQueue.enqueue( {slotIndex, ToggleWindowState});
+    m_iface.call("invokeShortcut", "dockerCommandAvailable");
 }
 
 void DockerDaemon::doUndock(int slotIndex) {
     DockedWindow* currentWindow = m_dockedWindows[slotIndex];
-    m_iface.call("invokeShortcut", getSlotCommand(slotIndex));
-    m_iface.call("invokeShortcut", "dockerUndockWindow");
+    m_commandQueue.enqueue( {slotIndex, UndockWindow});
+    m_iface.call("invokeShortcut", "dockerCommandAvailable");
 
     delete currentWindow->config;
     m_junk->show();
@@ -141,45 +156,10 @@ void DockerDaemon::doUndockAll() {
     }
 }
 
-const char* DockerDaemon::getSlotCommand(int slotIndex) {
-    const char *slotCmd;
-    switch (slotIndex) {
-        case 0:
-            slotCmd = "dockerSetSlot1";
-            break;
-        case 1:
-            slotCmd = "dockerSetSlot2";
-            break;
-        case 2:
-            slotCmd = "dockerSetSlot3";
-            break;
-        case 3:
-            slotCmd = "dockerSetSlot4";
-            break;
-        case 4:
-            slotCmd = "dockerSetSlot5";
-            break;
-        case 5:
-            slotCmd = "dockerSetSlot6";
-            break;
-        case 6:
-            slotCmd = "dockerSetSlot7";
-            break;
-        case 7:
-            slotCmd = "dockerSetSlot8";
-            break;
-        case 8:
-            slotCmd = "dockerSetSlot9";
-            break;
-        case 9:
-            slotCmd = "dockerSetSlot10";
-            break;
-    }
-    return(slotCmd);
-}
+
 
 void DockerDaemon::closeWindow(int slotIndex)
 {
-    m_iface.call("invokeShortcut", getSlotCommand(slotIndex));
-    m_iface.call("invokeShortcut", "dockerCloseWindow");
+    m_commandQueue.enqueue({slotIndex, CloseWindow});
+    m_iface.call("invokeShortcut", "dockerCommandAvailable");
 }

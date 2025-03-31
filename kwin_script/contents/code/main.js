@@ -12,6 +12,11 @@ const NUM_SLOTS = 10;
 const ALREADY_DOCKED = -1;
 const SLOTS_FULL = -2;
 const NOT_NORMAL_WINDOW = -3;
+const TOGGLE_WINDOW_STATE = 4001;
+const UNDOCK_WINDOW       = 4002;
+const UNDOCK_ALL          = 4003;
+const CLOSE_WINDOW        = 4004;
+const SETUP_AVAILABLE     = 4005;
 
 var clientList = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
 var clientValid = [false, false, false, false, false, false, false, false, false, false];
@@ -19,52 +24,46 @@ var currentClientIndex = -1;
 var returnval = "default";
 var q1 = 0;
 
-function dockerSetSlot1() {
-    currentClientIndex = 0;
-}
-function dockerSetSlot2() {
-    currentClientIndex = 1;
-}
-function dockerSetSlot3() {
-    currentClientIndex = 2;
-}
-function dockerSetSlot4() {
-    currentClientIndex = 3;
+function dockerCommandAvailable() {
+    callDBus("org.andtru.menutest",
+             "/docker",
+             "com.wkdocker.wkdocker.DockerDaemon",
+             "requestCommand",
+             function(slotIndex, command) {processCommand(slotIndex, command);}
+            );
 }
 
-function dockerSetSlot5() {
-    currentClientIndex = 4;
+function processCommand(slotIndex, command) {
+    currentClientIndex = slotIndex;
+    switch (command) {
+    case TOGGLE_WINDOW_STATE:
+        toggleWindowState(slotIndex, command);
+        break;
+    case UNDOCK_WINDOW:
+        undockWindow(slotIndex);
+        break;
+    case UNDOCK_ALL:
+        undockAll();
+        break;
+    case CLOSE_WINDOW:
+        closeWindow(slotIndex);
+        break;
+    case SETUP_AVAILABLE:
+        dockerSetupAvailable(slotIndex);
+        break
+   }
 }
+    
 
-function dockerSetSlot6() {
-    currentClientIndex = 5;
-}
-
-function dockerSetSlot7() {
-    currentClientIndex = 6;
-}
-
-function dockerSetSlot8() {
-    currentClientIndex = 7;
-}
-
-function dockerSetSlot9() {
-    currentClientIndex = 8;
-}
-
-function dockerSetSlot10() {
-    currentClientIndex = 9;
-}
-
-function dockerDockWindow() {
+function toggleWindowState(slotIndex) {
     var currentDesktop = workspace.currentDesktop;
     var topNormalWindow = 0;
 
-    if (currentClientIndex < 0 || !clientValid[currentClientIndex]) {
+    if (slotIndex < 0 || !clientValid[slotIndex]) {
         return;
     }
 
-    var activeClient = clientList[currentClientIndex]["WindowID"];
+    var activeClient = clientList[slotIndex]["WindowID"];
 
     // If window is on top, on the current desktop, and not minimized then minimize it
     for (var i = workspace.stackingOrder.length - 1; i >= 0; --i) {
@@ -78,20 +77,20 @@ function dockerDockWindow() {
         (activeClient.onAllDesktops || activeClient.desktops[0] == currentDesktop) &&
         activeClient.minimized == false) {
         activeClient.minimized = true;
-        clientList[currentClientIndex]["Minimized"] = true;
+        clientList[slotIndex]["Minimized"] = true;
         activeClient.skipTaskbar = true;
         activeClient.skipSwitcher = true;
 
     // If window is visible on current desktop but not active, make it active
     } else if ((activeClient.onAllDesktops || activeClient.desktops[0] == currentDesktop) && !activeClient.minimized) {
         workspace.activeWindow = activeClient;
-        activeClient.skipTaskbar = clientList[currentClientIndex]["SkipTaskBar"];
-        activeClient.skipSwitcher = clientList[currentClientIndex]["SkipPager"];
+        activeClient.skipTaskbar = clientList[slotIndex]["SkipTaskBar"];
+        activeClient.skipSwitcher = clientList[slotIndex]["SkipPager"];
     // Otherwise it is on another desktop, so make it active and either move it
     // to the current desktop (LockToDesktop == false) or switch to the desktop it is on
     } else
     {
-        if (clientList[currentClientIndex]["LockToDesktop"]){
+        if (clientList[slotIndex]["LockToDesktop"]){
             if (!activeClient.onAllDesktops && activeClient.moveable) {
                 workspace.currentDesktop = activeClient.desktops[0];
             }
@@ -100,23 +99,23 @@ function dockerDockWindow() {
         }
 
         activeClient.minimized = false;
-        clientList[currentClientIndex]["Minimized"] = false;
+        clientList[slotIndex]["Minimized"] = false;
         workspace.activeWindow = activeClient;
-        activeClient.skipTaskbar = clientList[currentClientIndex]["SkipTaskBar"];
-        activeClient.skipSwitcher = clientList[currentClientIndex]["SkipPager"];
+        activeClient.skipTaskbar = clientList[slotIndex]["SkipTaskBar"];
+        activeClient.skipSwitcher = clientList[slotIndex]["SkipPager"];
     }
 }
 
-function dockerUndockWindow() {
-    if (clientValid[currentClientIndex] == true) {
-        var activeClient = clientList[currentClientIndex]["WindowID"];
+function undockWindow(slotIndex) {
+    if (clientValid[slotIndex] == true) {
+        var activeClient = clientList[slotIndex]["WindowID"];
 
         activeClient.minimized = false;
-        clientList[currentClientIndex]["Minimized"] = false;
+        clientList[slotIndex]["Minimized"] = false;
         activeClient.skipTaskbar = false;
         activeClient.skipSwitcher = false;
-        clientList[currentClientIndex] = {};
-        clientValid[currentClientIndex] = false;
+        clientList[slotIndex] = {};
+        clientValid[slotIndex] = false;
     }
 }
 
@@ -136,7 +135,7 @@ function dockerSetupAvailable() {
                                           ws["LockToDesktop"] = g;
                                           ws["Sticky"] = h;
                                           ws["Initialized"] = true;
-                                          dockerDockWindow();
+                                          toggleWindowState(a);
                                       } else {
                                           // Store to local setup vars
                                           ws["SkipPager"] = b;
@@ -152,6 +151,8 @@ function dockerSetupAvailable() {
                                           ws["WindowID"].skipTaskbar = c;
                                           ws["WindowID"].onAllDesktops = h;
                                       }
+                                       }
+             )
 }
              
     
@@ -167,7 +168,7 @@ function pickWindow() {
             callDBus("org.andtru.menutest", 
                      "/docker", 
                      "com.wkdocker.wkdocker.DockerDaemon", 
-                     "addNewWindow", ALREADY_DOCKED, selectedWindow.resourceClass);
+                     "addNewWindow", ALREADY_DOCKED, selectedWindow.resourceClass, "Error");
             return;
         }
     }
@@ -177,7 +178,7 @@ function pickWindow() {
         callDBus("org.andtru.menutest", 
                  "/docker", 
                  "com.wkdocker.wkdocker.DockerDaemon", 
-                 "addNewWindow", NOT_NORMAL_WINDOW, selectedWindow.resourceClass);
+                 "addNewWindow", NOT_NORMAL_WINDOW, selectedWindow.resourceClass, "Error");
         return;
     }
         
@@ -189,8 +190,6 @@ function pickWindow() {
             clientList[i]["WindowID"] = selectedWindow;
             clientList[i]["Initialized"] = false;
             
-            // If you want ot use the top window rather than the active window
-            // clientList[i] = workspace.stackingOrder[workspace.stackingOrder.length - 2];
             clientValid[i] = true;
 
             callDBus("org.andtru.menutest", 
@@ -326,11 +325,11 @@ function undockAll() {
 }
 
 // Close a window
-function dockerCloseWindow() {
-    currentWindow = clientList[currentClientIndex]["WindowID"];
-    currentWindow.closeWindow();
+function closeWindow(slotIndex) {
+    clientList[slotIndex]["WindowID"].closeWindow();
 }
 
+/*
 registerShortcut("dockerSetSlot1", "dockerSetSlot1", "", dockerSetSlot1);
 registerShortcut("dockerSetSlot2", "dockerSetSlot2", "", dockerSetSlot2);
 registerShortcut("dockerSetSlot3", "dockerSetSlot3", "", dockerSetSlot3);
@@ -347,3 +346,8 @@ registerShortcut("pickWindow", "pickWindow", "Meta+Shift+P", pickWindow);
 registerShortcut("undockAll", "undockAll", "Meta+Shift+U", undockAll);
 registerShortcut("dockerSetupAvailable", "dockerSetupAvailable", "", dockerSetupAvailable);
 registerShortcut("dockerCloseWindow", "dockerCloseWindow", "", dockerCloseWindow);
+*/
+
+registerShortcut("pickWindow", "pickWindow", "Meta+Shift+P", pickWindow);
+registerShortcut("dockerCommandAvailable", "dockerCommandAvailable", "", dockerCommandAvailable);
+registerShortcut("dockerSetupAvailable", "dockerSetupAvailable", "", dockerSetupAvailable);
