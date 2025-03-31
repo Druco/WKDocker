@@ -1,5 +1,23 @@
-#include "configsettings.h"
+/*
+ *  Copyright (C) 2025 Bruce Anderson <bcom@andtru.org>
+ *
+ * This is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
+ * USA.
+ */
 
+#include "configsettings.h"
 
 ConfigSettings::ConfigSettings(QSettings& configFile, QString windowName) :
     m_configFile(configFile)
@@ -32,12 +50,14 @@ ConfigSettings::ConfigSettings(QSettings& configFile, QString windowName) :
 
 };
 
-void ConfigSettings::getConfigItem(QString key, int& val) {
+void ConfigSettings::getConfigItem(QString key, int& val)
+{
     if (key == BALLOON_TIMEOUT_KEY)
         val = m_balloonTimeout;
 }
 
-void ConfigSettings::getConfigItem(QString key, bool& val) {
+void ConfigSettings::getConfigItem(QString key, bool& val)
+{
     if (key == STICKY_KEY)
         val = m_sticky;
     else if (key == SKIP_PAGER_KEY)
@@ -54,17 +74,20 @@ void ConfigSettings::getConfigItem(QString key, bool& val) {
         val = m_lockToDesktop;
 }
 
-void ConfigSettings::getConfigItem(QString key, QString& val) {
+void ConfigSettings::getConfigItem(QString key, QString& val)
+{
     if (key == CUSTOM_ICON_KEY)
         val = m_customIcon;
 }
 
-void ConfigSettings::setConfigItem(QString key, int val) {
+void ConfigSettings::setConfigItem(QString key, int val)
+{
     if (key == BALLOON_TIMEOUT_KEY)
         m_balloonTimeout = val;
 }
 
-void ConfigSettings::setConfigItem(QString key, bool val) {
+void ConfigSettings::setConfigItem(QString key, bool val)
+{
     if (key == STICKY_KEY)
         m_sticky = val;
     else if (key == SKIP_PAGER_KEY)
@@ -81,12 +104,14 @@ void ConfigSettings::setConfigItem(QString key, bool val) {
         m_lockToDesktop = val;
 }
 
-void ConfigSettings::setConfigItem(QString key, QString val) {
+void ConfigSettings::setConfigItem(QString key, QString val)
+{
     if (key == CUSTOM_ICON_KEY)
         m_customIcon = val;
 }
 
-void ConfigSettings::saveSettingsGlobal() {
+void ConfigSettings::saveSettingsGlobal()
+{
     m_configFile.beginGroup("_GLOBAL_DEFAULTS");
     m_configFile.setValue(CUSTOM_ICON_KEY,    m_customIcon);
     m_configFile.setValue(BALLOON_TIMEOUT_KEY,       m_balloonTimeout);
@@ -100,7 +125,8 @@ void ConfigSettings::saveSettingsGlobal() {
     m_configFile.endGroup();
 }
 
-void ConfigSettings::saveSettingsApp() {
+void ConfigSettings::saveSettingsApp()
+{
     m_configFile.beginGroup(m_windowName);
     m_configFile.setValue(CUSTOM_ICON_KEY,    m_customIcon);
     m_configFile.setValue(BALLOON_TIMEOUT_KEY,       m_balloonTimeout);

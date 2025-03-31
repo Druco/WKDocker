@@ -1,5 +1,28 @@
-#ifndef DOCKERDAEMON_H_INCLUDED
-#define DOCKERDAEMON_H_INCLUDED
+/*
+ *  Copyright (C) 2025 Bruce Anderson <bcom@andtru.org>
+ *
+ * This is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
+ * USA.
+ */
+
+#ifndef DOCKERDAEMON_H
+#define DOCKERDAEMON_H
+
+#include "constants.h"
+#include "trayitem.h"
+#include "configsettings.h"
 
 #include <QObject>
 #include <QtDBus/QDBusConnection>
@@ -8,15 +31,12 @@
 #include <QMainWindow>
 #include <QQueue>
 
-#include "constants.h"
-#include "trayitem.h"
-#include "configsettings.h"
-
 class TrayItem;  // Forward reference
 
-struct DockedWindow {
-    TrayItem* item;
-    ConfigSettings* config;
+struct DockedWindow
+{
+    TrayItem *item;
+    ConfigSettings *config;
 };
 
 class DockerDaemon : public QObject
@@ -28,7 +48,7 @@ public:
     ~DockerDaemon();
     void toggleHideShow(int slotIndex);
 
-    QMainWindow* m_junk;
+    QMainWindow *m_junk;
 
     Q_SCRIPTABLE void addNewWindow(int slotIndex, QString windowName, QString windowTitle);
     Q_SCRIPTABLE void requestSetup(int slotIndexIn,
@@ -54,8 +74,8 @@ public:
 private:
     QSettings m_configFile;
     QDBusInterface m_iface;
-    const char* getSlotCommand(int slotIndex);
-    DockedWindow* m_dockedWindows[NUM_SLOTS];
+    const char *getSlotCommand(int slotIndex);
+    DockedWindow *m_dockedWindows[NUM_SLOTS];
 
 enum Command {
     ToggleWindowState = 4001,
@@ -73,4 +93,4 @@ struct CommandStruct
 
 QQueue<CommandStruct> m_commandQueue;
 };
-#endif // DOCKERDAEMON_H_INCLUDED
+#endif // DOCKERDAEMON_H

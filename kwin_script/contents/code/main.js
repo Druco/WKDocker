@@ -1,13 +1,22 @@
 /*
-    KWin - the KDE window manager
-    This file is part of the KDE project.
+ *  Copyright (C) 2025 Bruce Anderson <bcom@andtru.org>
+ *
+ * This is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
+ * USA.
+ */
 
-    SPDX-FileCopyrightText: 2014 Thomas Lübking <thomas.luebking@gmail.com>
-
-    SPDX-License-Identifier: GPL-2.0-or-later
-*/
-
-var firefoxClient;
 const NUM_SLOTS = 10;
 const ALREADY_DOCKED = -1;
 const SLOTS_FULL = -2;
@@ -24,7 +33,8 @@ var currentClientIndex = -1;
 var returnval = "default";
 var q1 = 0;
 
-function dockerCommandAvailable() {
+function dockerCommandAvailable()
+{
     callDBus("org.andtru.menutest",
              "/docker",
              "com.wkdocker.wkdocker.DockerDaemon",
@@ -33,7 +43,8 @@ function dockerCommandAvailable() {
             );
 }
 
-function processCommand(slotIndex, command) {
+function processCommand(slotIndex, command)
+{
     currentClientIndex = slotIndex;
     switch (command) {
     case TOGGLE_WINDOW_STATE:
@@ -49,13 +60,14 @@ function processCommand(slotIndex, command) {
         closeWindow(slotIndex);
         break;
     case SETUP_AVAILABLE:
-        dockerSetupAvailable(slotIndex);
+        getAvailableSetup(slotIndex);
         break
    }
 }
     
 
-function toggleWindowState(slotIndex) {
+function toggleWindowState(slotIndex)
+{
     var currentDesktop = workspace.currentDesktop;
     var topNormalWindow = 0;
 
@@ -88,8 +100,7 @@ function toggleWindowState(slotIndex) {
         activeClient.skipSwitcher = clientList[slotIndex]["SkipPager"];
     // Otherwise it is on another desktop, so make it active and either move it
     // to the current desktop (LockToDesktop == false) or switch to the desktop it is on
-    } else
-    {
+    } else {
         if (clientList[slotIndex]["LockToDesktop"]){
             if (!activeClient.onAllDesktops && activeClient.moveable) {
                 workspace.currentDesktop = activeClient.desktops[0];
@@ -106,7 +117,8 @@ function toggleWindowState(slotIndex) {
     }
 }
 
-function undockWindow(slotIndex) {
+function undockWindow(slotIndex)
+{
     if (clientValid[slotIndex] == true) {
         var activeClient = clientList[slotIndex]["WindowID"];
 
@@ -119,12 +131,13 @@ function undockWindow(slotIndex) {
     }
 }
 
-function dockerSetupAvailable() {
+function getAvailableSetup(slotIndex)
+{
     callDBus("org.andtru.menutest",
              "/docker",
              "com.wkdocker.wkdocker.DockerDaemon",
              "requestSetup",
-             currentClientIndex,
+             slotIndex,
              function(a,b,c,d,e,f,g,h) {var ws = clientList[a];
                                       if (ws["Initialized"] == false) {
                                           ws["SkipPager"] = b;
@@ -159,7 +172,8 @@ function dockerSetupAvailable() {
 // Second version of pick window. Does not require SetSlot to be called
 // first, it just finds the next available slot and uses it. Picks
 // active window
-function pickWindow() {
+function pickWindow()
+{
     var selectedWindow = workspace.activeWindow;
 
     // Check to make sure the window hasn't already been docked
@@ -173,8 +187,7 @@ function pickWindow() {
         }
     }
 
-    if (!selectedWindow.normalWindow)
-    {
+    if (!selectedWindow.normalWindow) {
         callDBus("org.andtru.menutest", 
                  "/docker", 
                  "com.wkdocker.wkdocker.DockerDaemon", 
@@ -252,7 +265,8 @@ function pickWindow() {
              "addNewWindow", SLOTS_FULL, selectedWindow.resourceClass);
 }
 
-function onMinimize() {
+function onMinimize()
+{
     //Find if one of our windows has changed
     for (var i=0; i<NUM_SLOTS; ++i) {
         testWindow = clientList[i]["WindowID"];
@@ -285,7 +299,8 @@ function onClose7() {onClose(7);}
 function onClose8() {onClose(8);}
 function onClose9() {onClose(9);}
 
-function onClose(slotIndex) {
+function onClose(slotIndex)
+{
     clientList[slotIndex] = {};
     clientValid[slotIndex] = false;
     callDBus("org.andtru.menutest",
@@ -306,18 +321,20 @@ function onCaptionChanged7() {onCaptionChanged(7);}
 function onCaptionChanged8() {onCaptionChanged(8);}
 function onCaptionChanged9() {onCaptionChanged(9);}
 
-function onCaptionChanged(slotIndex) {
+function onCaptionChanged(slotIndex)
+{
     callDBus("org.andtru.menutest",
              "/docker",
              "com.wkdocker.wkdocker.DockerDaemon",
              "onCaptionChanged",
-             currentClientIndex,
+             slotIndex,
              clientList[slotIndex]["WindowID"].caption
             );
 }
 
 // Temporary only test version
-function undockAll() {
+function undockAll()
+{
     for (var i = 0; i < NUM_SLOTS; ++i) {
         clientList[i] = {};
         clientValid[i] = false;
@@ -325,29 +342,10 @@ function undockAll() {
 }
 
 // Close a window
-function closeWindow(slotIndex) {
+function closeWindow(slotIndex)
+{
     clientList[slotIndex]["WindowID"].closeWindow();
 }
 
-/*
-registerShortcut("dockerSetSlot1", "dockerSetSlot1", "", dockerSetSlot1);
-registerShortcut("dockerSetSlot2", "dockerSetSlot2", "", dockerSetSlot2);
-registerShortcut("dockerSetSlot3", "dockerSetSlot3", "", dockerSetSlot3);
-registerShortcut("dockerSetSlot4", "dockerSetSlot4", "", dockerSetSlot4);
-registerShortcut("dockerSetSlot5", "dockerSetSlot5", "", dockerSetSlot5);
-registerShortcut("dockerSetSlot6", "dockerSetSlot6", "", dockerSetSlot6);
-registerShortcut("dockerSetSlot7", "dockerSetSlot7", "", dockerSetSlot7);
-registerShortcut("dockerSetSlot8", "dockerSetSlot8", "", dockerSetSlot8);
-registerShortcut("dockerSetSlot9", "dockerSetSlot9", "", dockerSetSlot9);
-registerShortcut("dockerSetSlot10", "dockerSetSlot10", "", dockerSetSlot10);
-registerShortcut("dockerDockWindow", "dockerDockWindow", "", dockerDockWindow);
-registerShortcut("dockerUndockWindow", "dockerUndockWindow", "", dockerUndockWindow);
 registerShortcut("pickWindow", "pickWindow", "Meta+Shift+P", pickWindow);
-registerShortcut("undockAll", "undockAll", "Meta+Shift+U", undockAll);
-registerShortcut("dockerSetupAvailable", "dockerSetupAvailable", "", dockerSetupAvailable);
-registerShortcut("dockerCloseWindow", "dockerCloseWindow", "", dockerCloseWindow);
-*/
-
-registerShortcut("pickWindow", "pickWindow", "Meta+Shift+P", pickWindow);
-registerShortcut("dockerCommandAvailable", "dockerCommandAvailable", "", dockerCommandAvailable);
-registerShortcut("dockerSetupAvailable", "dockerSetupAvailable", "", dockerSetupAvailable);
+registerShortcut("dockerCommandAvailable", "dockerCommandAvailable", "", dockerCommandAvailable)

@@ -1,6 +1,5 @@
 /*
- *  Copyright (C) 2009 John Schember <john@nachtimwald.com>
- *  Copyright (C) 2004 Girish Ramakrishnan All Rights Reserved.
+ *  Copyright (C) 2025 Bruce Anderson <bcom@andtru.org>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +17,11 @@
  * USA.
  */
 
-#ifndef _TRAYITEM_H
-#define	_TRAYITEM_H
+#ifndef TRAYITEM_H
+#define	TRAYITEM_H
+
+#include "configsettings.h"
+#include "dockerdaemon.h"
 
 #include <QAction>
 #include <QEvent>
@@ -29,8 +31,6 @@
 #include <QString>
 #include <QSystemTrayIcon>
 #include <QSettings>
-#include "configsettings.h"
-#include "dockerdaemon.h"
 
 class DockerDaemon;
 
@@ -45,8 +45,7 @@ class DockerDaemon;
 #define NOARG (int8_t)-1    // 'bool' in unset state
 
 
-enum Option
-{
+enum Option {
     SkipTaskbar,
     SkipPager,
     Sticky,
@@ -55,7 +54,8 @@ enum Option
     Option_MAX
 };
 
-struct TrayItemArgs {   // from cmd line only
+struct TrayItemArgs    // from cmd line only
+{
     QString sCustomIcon;
     int iBalloonTimeout;
     int8_t opt[Option_MAX];
@@ -63,17 +63,19 @@ struct TrayItemArgs {   // from cmd line only
 
 typedef TrayItemArgs TrayItemConfig;
 
-struct TrayItemSettings {  // from 1) cmd line, 2) app config, 3) global config, 4) default
+struct TrayItemSettings   // from 1) cmd line, 2) app config, 3) global config, 4) default
+{
     QString sCustomIcon;
     int iBalloonTimeout;
     bool opt[Option_MAX];
 };
 
-class TrayItem : public QSystemTrayIcon {
+class TrayItem : public QSystemTrayIcon
+{
     Q_OBJECT
 
 public:
-    TrayItem(DockerDaemon* parent, int slotNumber, QString windowName, QString windowTitle, ConfigSettings* configFile);
+    TrayItem(DockerDaemon *parent, int slotNumber, QString windowName, QString windowTitle, ConfigSettings *configFile);
     ~TrayItem();
 
     void changeWindowTitle(QString newTitle);
@@ -110,9 +112,9 @@ private:
 
     bool m_customIcon;
 
-    DockerDaemon* m_parent;
+    DockerDaemon *m_parent;
     int m_slotIndex;
-    ConfigSettings* m_configFile;
+    ConfigSettings *m_configFile;
     TrayItemSettings m_settings;
 
     long m_desktop;
@@ -134,5 +136,5 @@ private:
     QAction *m_actionSaveSettingsGlobal;
 };
 
-#endif	/* _TRAYITEM_H */
+#endif	/* TRAYITEM_H */
 

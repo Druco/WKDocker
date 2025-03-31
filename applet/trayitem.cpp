@@ -1,6 +1,5 @@
 /*
- *  Copyright (C) 2009, 2015 John Schember <john@nachtimwald.com>
- *  Copyright (C) 2004 Girish Ramakrishnan All Rights Reserved.
+ *  Copyright (C) 2025 Bruce Anderson <bcom@andtru.org>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +26,7 @@
 
 #include "trayitem.h"
 
-TrayItem::TrayItem(DockerDaemon* parent, int slotIndex, QString windowName, QString windowTitle, ConfigSettings* configFile) :
+TrayItem::TrayItem(DockerDaemon *parent, int slotIndex, QString windowName, QString windowTitle, ConfigSettings *configFile) :
     m_configFile(configFile), m_parent(parent)
 {
     m_customIcon = false;
@@ -49,13 +48,15 @@ TrayItem::TrayItem(DockerDaemon* parent, int slotIndex, QString windowName, QStr
     setCustomIcon(path);
 }
 
-TrayItem::~TrayItem() {
+TrayItem::~TrayItem()
+{
     // Only the main menu needs to be deleted. The rest of the menus and actions
     // are children of this menu and Qt will delete all children.
     delete m_contextMenu;
 }
 
-int TrayItem::nonZeroBalloonTimeout() {
+int TrayItem::nonZeroBalloonTimeout()
+{
 #if 0
     QString fmt = "%1/BalloonTimeout";
     int bto = m_config.value(fmt.arg(m_dockedAppName), 0).toInt();
@@ -69,7 +70,8 @@ int TrayItem::nonZeroBalloonTimeout() {
 }
 
 #if 0
-TrayItemConfig TrayItem::readConfigGlobals() {
+TrayItemConfig TrayItem::readConfigGlobals()
+{
     TrayItemConfig config;
 
     m_config.beginGroup("_GLOBAL_DEFAULTS");
@@ -102,12 +104,14 @@ void TrayItem::saveSettingsApp()
     m_configFile->saveSettingsApp();
 }
 
-void TrayItem::closeWindow() {    
+void TrayItem::closeWindow()
+{
     m_parent->closeWindow(m_slotIndex);
 }
 
 
-void TrayItem::setCustomIcon(QString path) {
+void TrayItem::setCustomIcon(QString path)
+{
     m_customIcon = true;
     QPixmap customIcon;
     if (customIcon.load(path)) {
@@ -119,7 +123,8 @@ void TrayItem::setCustomIcon(QString path) {
     setIcon(QIcon(customIcon));
 }
 
-void TrayItem::selectCustomIcon(bool value) {
+void TrayItem::selectCustomIcon(bool value)
+{
     Q_UNUSED(value);
 
     QStringList types;
@@ -143,41 +148,47 @@ void TrayItem::selectCustomIcon(bool value) {
     }
 }
 
-void TrayItem::setSkipTaskbar(bool value) {
+void TrayItem::setSkipTaskbar(bool value)
+{
     m_actionSkipTaskbar->setChecked(value);
     m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(SKIP_TASKBAR_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
 
-void TrayItem::setSkipPager(bool value) {
+void TrayItem::setSkipPager(bool value)
+{
     m_actionSkipPager->setChecked(value);
     m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(SKIP_PAGER_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
 
-void TrayItem::setSticky(bool value) {
+void TrayItem::setSticky(bool value)
+{
     m_actionSticky->setChecked(value);
     m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(STICKY_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
 
-void TrayItem::setIconifyMinimized(bool value) {
+void TrayItem::setIconifyMinimized(bool value)
+{
     m_actionIconifyMinimized->setChecked(value);
     m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(ICONIFY_IF_MINIMIZED_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
 
-void TrayItem::setLockToDesktop(bool value) {
+void TrayItem::setLockToDesktop(bool value)
+{
     m_actionLockToDesktop->setChecked(value);
     m_configFile->setConfigItem(LOCK_TO_DESKTOP_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
 
-void TrayItem::setBalloonTimeout(int value) {
+void TrayItem::setBalloonTimeout(int value)
+{
 #if 0
     if (value < 0) {
         value = 0;
@@ -187,7 +198,8 @@ void TrayItem::setBalloonTimeout(int value) {
 #endif
 }
 
-void TrayItem::setBalloonTimeout(bool value) {
+void TrayItem::setBalloonTimeout(bool value)
+{
 #if 0
     if (!value) {
         setBalloonTimeout(-1);
@@ -197,29 +209,34 @@ void TrayItem::setBalloonTimeout(bool value) {
 #endif
 }
 
-void TrayItem::toggleWindow() {
+void TrayItem::toggleWindow()
+{
     m_parent->toggleHideShow(m_slotIndex);
 }
 
-void TrayItem::doUndock() {
+void TrayItem::doUndock()
+{
     m_parent->doUndock(m_slotIndex);
 }
 
-void TrayItem::undockAll() {
+void TrayItem::undockAll()
+{
     m_parent->doUndockAll();
 }
 
 /*
  * Update the title in the tooltip.
  */
-void TrayItem::updateTitle() {
+void TrayItem::updateTitle()
+{
     setToolTip(QString("%1 [%2]").arg(m_windowTitle).arg(m_dockedAppName));
     if (m_settings.iBalloonTimeout > 0) {
         // BAA showMessage(m_dockedAppName,/* title,*/ QSystemTrayIcon::Information, m_settings.iBalloonTimeout);
     }
 }
 
-void TrayItem::createContextMenu() {
+void TrayItem::createContextMenu()
+{
     bool boolVal;
     int intVal;
     QString stringVal;
@@ -308,7 +325,8 @@ void TrayItem::createContextMenu() {
     setContextMenu(m_contextMenu);
 }
 
-void TrayItem::changeWindowTitle(QString newTitle) {
+void TrayItem::changeWindowTitle(QString newTitle)
+{
     m_windowTitle = newTitle;
     updateTitle();
 }
