@@ -332,7 +332,6 @@ function onCaptionChanged(slotIndex)
             );
 }
 
-// Temporary only test version
 function undockAll()
 {
     for (var i = 0; i < NUM_SLOTS; ++i) {
