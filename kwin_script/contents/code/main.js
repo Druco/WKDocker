@@ -35,9 +35,9 @@ var q1 = 0;
 
 function dockerCommandAvailable()
 {
-    callDBus("org.andtru.menutest",
+    callDBus("org.andtru.wkdocker",
              "/docker",
-             "com.wkdocker.wkdocker.DockerDaemon",
+             "org.andtru.wkdocker.DockerDaemon",
              "requestCommand",
              function(slotIndex, command) {processCommand(slotIndex, command);}
             );
@@ -133,9 +133,9 @@ function undockWindow(slotIndex)
 
 function getAvailableSetup(slotIndex)
 {
-    callDBus("org.andtru.menutest",
+    callDBus("org.andtru.wkdocker",
              "/docker",
-             "com.wkdocker.wkdocker.DockerDaemon",
+             "org.andtru.wkdocker.DockerDaemon",
              "requestSetup",
              slotIndex,
              function(a,b,c,d,e,f,g,h) {var ws = clientList[a];
@@ -148,7 +148,7 @@ function getAvailableSetup(slotIndex)
                                           ws["LockToDesktop"] = g;
                                           ws["Sticky"] = h;
                                           ws["Initialized"] = true;
-                                          toggleWindowState(a);
+                                          clientList[a]["WindowID"].minimized = true;
                                       } else {
                                           // Store to local setup vars
                                           ws["SkipPager"] = b;
@@ -179,18 +179,18 @@ function pickWindow()
     // Check to make sure the window hasn't already been docked
     for (var i = 0; i < NUM_SLOTS; ++i) {
         if (clientValid[i] == true && clientList[i]["WindowID"] == selectedWindow) {
-            callDBus("org.andtru.menutest", 
+            callDBus("org.andtru.wkdocker", 
                      "/docker", 
-                     "com.wkdocker.wkdocker.DockerDaemon", 
+                     "org.andtru.wkdocker.DockerDaemon", 
                      "addNewWindow", ALREADY_DOCKED, selectedWindow.resourceClass, "Error");
             return;
         }
     }
 
     if (!selectedWindow.normalWindow) {
-        callDBus("org.andtru.menutest", 
+        callDBus("org.andtru.wkdocker", 
                  "/docker", 
-                 "com.wkdocker.wkdocker.DockerDaemon", 
+                 "org.andtru.wkdocker.DockerDaemon", 
                  "addNewWindow", NOT_NORMAL_WINDOW, selectedWindow.resourceClass, "Error");
         return;
     }
@@ -202,12 +202,12 @@ function pickWindow()
             clientList[i] = {};
             clientList[i]["WindowID"] = selectedWindow;
             clientList[i]["Initialized"] = false;
-            
+
             clientValid[i] = true;
 
-            callDBus("org.andtru.menutest", 
+            callDBus("org.andtru.wkdocker", 
                      "/docker", 
-                     "com.wkdocker.wkdocker.DockerDaemon", 
+                     "org.andtru.wkdocker.DockerDaemon", 
                      "addNewWindow", currentClientIndex,
                                      clientList[i]["WindowID"].resourceClass,
                                      clientList[i]["WindowID"].caption);
@@ -259,9 +259,9 @@ function pickWindow()
         }
     }
     // There wasn't an empty slot so notify the companion app
-    callDBus("org.andtru.menutest", 
+    callDBus("org.andtru.wkdocker", 
              "/docker", 
-             "com.wkdocker.wkdocker.DockerDaemon", 
+             "org.andtru.wkdocker.DockerDaemon", 
              "addNewWindow", SLOTS_FULL, selectedWindow.resourceClass);
 }
 
@@ -303,9 +303,9 @@ function onClose(slotIndex)
 {
     clientList[slotIndex] = {};
     clientValid[slotIndex] = false;
-    callDBus("org.andtru.menutest",
+    callDBus("org.andtru.wkdocker",
              "/docker",
-             "com.wkdocker.wkdocker.DockerDaemon",
+             "org.andtru.wkdocker.DockerDaemon",
              "onClientClosed",
              currentClientIndex);
 }
@@ -323,9 +323,9 @@ function onCaptionChanged9() {onCaptionChanged(9);}
 
 function onCaptionChanged(slotIndex)
 {
-    callDBus("org.andtru.menutest",
+    callDBus("org.andtru.wkdocker",
              "/docker",
-             "com.wkdocker.wkdocker.DockerDaemon",
+             "org.andtru.wkdocker.DockerDaemon",
              "onCaptionChanged",
              slotIndex,
              clientList[slotIndex]["WindowID"].caption

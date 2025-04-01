@@ -48,14 +48,14 @@ DockerDaemon::DockerDaemon(QWidget *parent)
     }
 
     // register DBus object at org.kde.myapp/foobar
-    QDBusConnection::sessionBus().registerService("org.andtru.menutest");
+    QDBusConnection::sessionBus().registerService("org.andtru.wkdocker");
     QDBusConnection::sessionBus().registerObject("/docker", this, QDBusConnection::ExportScriptableContents);
 }
 
 DockerDaemon::~DockerDaemon()
 {
     QDBusConnection::sessionBus().unregisterObject("/docker");
-    QDBusConnection::sessionBus().unregisterService("org.andtru.menutest");
+    QDBusConnection::sessionBus().unregisterService("org.andtru.wkdocker");
 }
 
 void DockerDaemon::addNewWindow(int slotIndex, QString windowName, QString windowTitle)
