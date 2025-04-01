@@ -105,7 +105,7 @@ function toggleWindowState(slotIndex)
             if (!activeClient.onAllDesktops && activeClient.moveable) {
                 workspace.currentDesktop = activeClient.desktops[0];
             }
-        } else {
+        } else if (!activeClient.onAllDesktops){
             activeClient.desktops[0] = currentDesktop;
         }
 
@@ -138,15 +138,13 @@ function getAvailableSetup(slotIndex)
              "org.andtru.wkdocker.DockerDaemon",
              "requestSetup",
              slotIndex,
-             function(a,b,c,d,e,f,g,h) {var ws = clientList[a];
+             function(a,b,c,d,e,f) {var ws = clientList[a];
                                       if (ws["Initialized"] == false) {
                                           ws["SkipPager"] = b;
                                           ws["SkipTaskBar"] = c;
-                                          ws["IconifyIfMinimized"] = d;
-                                          ws["IconifyIfObscured"] = e;
-                                          ws["IconifIfFocusLost"] = f;
-                                          ws["LockToDesktop"] = g;
-                                          ws["Sticky"] = h;
+                                          ws["IcdconifyIfMinimized"] = d;
+                                          ws["LockToDesktop"] = e;
+                                          ws["Sticky"] = f;
                                           ws["Initialized"] = true;
                                           clientList[a]["WindowID"].minimized = true;
                                       } else {
@@ -154,17 +152,18 @@ function getAvailableSetup(slotIndex)
                                           ws["SkipPager"] = b;
                                           ws["SkipTaskBar"] = c;
                                           ws["IconifyIfMinimized"] = d;
-                                          ws["IconifyIfObscured"] = e;
-                                          ws["IconifIfFocusLost"] = f;
-                                          ws["LockToDesktop"] = g;
-                                          ws["Sticky"] = h;
+                                          ws["LockToDesktop"] = e;
+                                          ws["Sticky"] = f;
 
                                           // Activate those that should be done immediately
-                                          ws["WindowID"].skipSwitcher = b;
-                                          ws["WindowID"].skipTaskbar = c;
-                                          ws["WindowID"].onAllDesktops = h;
+                                          // but only if not minimized
+                                          if (!ws["WindowID"].minimized) {
+                                              ws["WindowID"].skipSwitcher = b;
+                                              ws["WindowID"].skipTaskbar = c;
+                                          }
+                                          ws["WindowID"].onAllDesktops = f;
                                       }
-                                       }
+                          }
              )
 }
              

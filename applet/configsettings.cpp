@@ -31,8 +31,6 @@ ConfigSettings::ConfigSettings(QSettings& configFile, QString windowName) :
     m_skipPager            = m_configFile.value(SKIP_PAGER_KEY,            DEFAULT_SkipPager).toBool();
     m_skipTaskbar          = m_configFile.value(SKIP_TASKBAR_KEY,          DEFAULT_SkipTaskbar).toBool();
     m_iconifyIfMinimized   = m_configFile.value(ICONIFY_IF_MINIMIZED_KEY,  DEFAULT_IconifyIfMinimized).toBool();
-    m_iconifyIfObscured    = m_configFile.value(ICONIFY_IF_OBSCURED_KEY,   DEFAULT_IconifyIfObscured).toBool();
-    m_iconifyIfFocusLost   = m_configFile.value(ICONIFY_IF_FOCUS_LOST_KEY, DEFAULT_IconifyIfFocusLost).toBool();
     m_lockToDesktop        = m_configFile.value(LOCK_TO_DESKTOP_KEY,       DEFAULT_LockToDesktop).toBool();
     m_configFile.endGroup();
 
@@ -43,8 +41,6 @@ ConfigSettings::ConfigSettings(QSettings& configFile, QString windowName) :
     m_skipPager            = m_configFile.value(SKIP_PAGER_KEY,            m_skipPager).toBool();
     m_skipTaskbar          = m_configFile.value(SKIP_TASKBAR_KEY,          m_skipTaskbar).toBool();
     m_iconifyIfMinimized   = m_configFile.value(ICONIFY_IF_MINIMIZED_KEY,  m_iconifyIfMinimized).toBool();
-    m_iconifyIfObscured    = m_configFile.value(ICONIFY_IF_OBSCURED_KEY,   m_iconifyIfObscured).toBool();
-    m_iconifyIfFocusLost   = m_configFile.value(ICONIFY_IF_FOCUS_LOST_KEY, m_iconifyIfFocusLost).toBool();
     m_lockToDesktop        = m_configFile.value(LOCK_TO_DESKTOP_KEY,       m_lockToDesktop).toBool();
     m_configFile.endGroup();
 
@@ -60,10 +56,6 @@ void ConfigSettings::getConfigItem(QString key, bool& val)
         val = m_skipTaskbar;
     else if (key == ICONIFY_IF_MINIMIZED_KEY)
         val = m_iconifyIfMinimized;
-    else if (key == ICONIFY_IF_OBSCURED_KEY)
-        val = m_iconifyIfObscured;
-    else if (key == ICONIFY_IF_FOCUS_LOST_KEY)
-        val = m_iconifyIfFocusLost;
     else if (key == LOCK_TO_DESKTOP_KEY)
         val = m_lockToDesktop;
     else if (key == BALLOON_TITLE_CHANGE_KEY)
@@ -88,10 +80,6 @@ void ConfigSettings::setConfigItem(QString key, bool val)
         m_skipTaskbar = val;
     else if (key == ICONIFY_IF_MINIMIZED_KEY)
         m_iconifyIfMinimized = val;
-    else if (key == ICONIFY_IF_OBSCURED_KEY)
-        m_iconifyIfObscured = val;
-    else if (key == ICONIFY_IF_FOCUS_LOST_KEY)
-        m_iconifyIfFocusLost = val;
     else if (key == LOCK_TO_DESKTOP_KEY)
         m_lockToDesktop = val;
     else if (key == BALLOON_TITLE_CHANGE_KEY)
@@ -112,8 +100,6 @@ void ConfigSettings::saveSettingsGlobal()
     m_configFile.setValue(SKIP_PAGER_KEY,            m_skipPager);
     m_configFile.setValue(SKIP_TASKBAR_KEY,          m_skipTaskbar);
     m_configFile.setValue(ICONIFY_IF_MINIMIZED_KEY,  m_iconifyIfMinimized);
-    m_configFile.setValue(ICONIFY_IF_OBSCURED_KEY,   m_iconifyIfObscured);
-    m_configFile.setValue(ICONIFY_IF_FOCUS_LOST_KEY, m_iconifyIfFocusLost);
     m_configFile.setValue(LOCK_TO_DESKTOP_KEY,       m_lockToDesktop);
     m_configFile.setValue(BALLOON_TITLE_CHANGE_KEY,  m_balloonOnTitleChange);
     m_configFile.endGroup();
@@ -127,8 +113,6 @@ void ConfigSettings::saveSettingsApp()
     m_configFile.setValue(SKIP_PAGER_KEY,            m_skipPager);
     m_configFile.setValue(SKIP_TASKBAR_KEY,          m_skipTaskbar);
     m_configFile.setValue(ICONIFY_IF_MINIMIZED_KEY,  m_iconifyIfMinimized);
-    m_configFile.setValue(ICONIFY_IF_OBSCURED_KEY,   m_iconifyIfObscured);
-    m_configFile.setValue(ICONIFY_IF_FOCUS_LOST_KEY, m_iconifyIfFocusLost);
     m_configFile.setValue(LOCK_TO_DESKTOP_KEY,       m_lockToDesktop);
     m_configFile.setValue(BALLOON_TITLE_CHANGE_KEY,  m_balloonOnTitleChange);
     m_configFile.endGroup();

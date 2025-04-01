@@ -105,8 +105,6 @@ void DockerDaemon::requestSetup(int slotIndexIn,
                                 bool &skipPager,
                                 bool &skipTaskbar,
                                 bool &iconifyIfMinimized,
-                                bool &iconifyIfObscured,
-                                bool &iconifyIfFocusLost,
                                 bool &lockToDeskTop,
                                 bool &sticky)
 {
@@ -116,8 +114,6 @@ void DockerDaemon::requestSetup(int slotIndexIn,
     currentConfig->getConfigItem(SKIP_PAGER_KEY, skipPager);
     currentConfig->getConfigItem(SKIP_TASKBAR_KEY, skipTaskbar);
     currentConfig->getConfigItem(ICONIFY_IF_MINIMIZED_KEY, iconifyIfMinimized);
-    currentConfig->getConfigItem(ICONIFY_IF_OBSCURED_KEY, iconifyIfObscured);
-    currentConfig->getConfigItem(ICONIFY_IF_OBSCURED_KEY, iconifyIfFocusLost);
     currentConfig->getConfigItem(LOCK_TO_DESKTOP_KEY, lockToDeskTop);
     currentConfig->getConfigItem(STICKY_KEY, sticky);
 }
@@ -156,15 +152,17 @@ void DockerDaemon::toggleHideShow(int slotIndex)
 void DockerDaemon::doUndock(int slotIndex)
 {
     DockedWindow *currentWindow = m_dockedWindows[slotIndex];
-    m_commandQueue.enqueue( {slotIndex, UndockWindow});
-    m_iface.call("invokeShortcut", "dockerCommandAvailable");
+    if (currentWindow != NULL) {
+        m_commandQueue.enqueue( {slotIndex, UndockWindow});
+        m_iface.call("invokeShortcut", "dockerCommandAvailable");
 
-    delete currentWindow->config;
-    m_junk->show();
-    delete currentWindow->item;
-    m_junk->hide();
-    delete currentWindow;
-    m_dockedWindows[slotIndex] = NULL;
+        delete currentWindow->config;
+        m_junk->show();
+        delete currentWindow->item;
+        m_junk->hide();
+        delete currentWindow;
+        m_dockedWindows[slotIndex] = NULL;
+    }
 }
 
 void DockerDaemon::doUndockAll()

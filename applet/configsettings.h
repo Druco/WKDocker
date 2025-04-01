@@ -29,8 +29,6 @@
 #define SKIP_PAGER_KEY            "SkipPager"
 #define SKIP_TASKBAR_KEY          "SkipTaskbar"
 #define ICONIFY_IF_MINIMIZED_KEY  "IconifyIfMinimized"
-#define ICONIFY_IF_OBSCURED_KEY   "IconifyIfObscured"
-#define ICONIFY_IF_FOCUS_LOST_KEY "IconifyIfFocusLost"
 #define LOCK_TO_DESKTOP_KEY       "LockToDeskTop"
 
 #define DEFAULT_CustomIcon          QString()
@@ -39,8 +37,6 @@
 #define DEFAULT_SkipPager           false
 #define DEFAULT_Sticky              false
 #define DEFAULT_IconifyIfMinimized  true
-#define DEFAULT_IconifyIfObscured   false
-#define DEFAULT_IconifyIfFocusLost  false
 #define DEFAULT_LockToDesktop       true       // Restore to original desktop (default) else restore to active desktop
 #define DEFAULT_BalloonOnTitleChange false
 
@@ -67,8 +63,6 @@ private:
     bool m_skipTaskbar;
     bool m_skipPager;
     bool m_iconifyIfMinimized;
-    bool m_iconifyIfObscured;
-    bool m_iconifyIfFocusLost;
     bool m_lockToDesktop;
     bool m_balloonOnTitleChange;
 };

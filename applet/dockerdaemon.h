@@ -56,8 +56,6 @@ public:
                                   bool &skipPager,
                                   bool &skipTaskbar,
                                   bool &iconifyIfMinimized,
-                                  bool &iconifyIfObscured,
-                                  bool &iconfiyIfFocusLost,
                                   bool &lockToDeskTop,
                                   bool &sticky);
 

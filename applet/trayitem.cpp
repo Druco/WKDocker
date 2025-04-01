@@ -67,8 +67,6 @@ TrayItemConfig TrayItem::readConfigGlobals()
       config.opt[SkipPager]        = m_config.value("SkipPager",        DEFAULT_SkipPager).toBool();
       config.opt[SkipTaskbar]      = m_config.value("SkipTaskbar",      DEFAULT_SkipTaskbar).toBool();
       config.opt[IconifyMinimized] = m_config.value("IconifyMinimized", DEFAULT_IconifyMinimized).toBool();
-      config.opt[IconifyObscured]  = m_config.value("IconifyObscured",  DEFAULT_IconifyObscured).toBool();
-      config.opt[IconifyFocusLost] = m_config.value("IconifyFocusLost", DEFAULT_IconifyFocusLost).toBool();
       config.opt[LockToDesktop]    = m_config.value("LockToDesktop",    DEFAULT_LockToDesktop).toBool();
     m_config.endGroup();
 
@@ -133,7 +131,6 @@ void TrayItem::selectCustomIcon(bool value)
 void TrayItem::setSkipTaskbar(bool value)
 {
     m_actionSkipTaskbar->setChecked(value);
-    m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(SKIP_TASKBAR_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
@@ -141,7 +138,6 @@ void TrayItem::setSkipTaskbar(bool value)
 void TrayItem::setSkipPager(bool value)
 {
     m_actionSkipPager->setChecked(value);
-    m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(SKIP_PAGER_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
@@ -149,7 +145,6 @@ void TrayItem::setSkipPager(bool value)
 void TrayItem::setSticky(bool value)
 {
     m_actionSticky->setChecked(value);
-    m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(STICKY_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
@@ -157,7 +152,6 @@ void TrayItem::setSticky(bool value)
 void TrayItem::setIconifyMinimized(bool value)
 {
     m_actionIconifyMinimized->setChecked(value);
-    m_parent->updateConfiguration(m_slotIndex);
     m_configFile->setConfigItem(ICONIFY_IF_MINIMIZED_KEY, value);
     m_parent->updateConfiguration(m_slotIndex);
 }
