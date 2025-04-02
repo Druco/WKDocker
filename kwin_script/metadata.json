@@ -7,11 +7,11 @@
                 "Name": "Bruce Anderson"
             }
         ],
-        "Description": "Hopefully be a replacement for KDocker",
+        "Description": "Allows windows to be docked to the systemtray",
         "Icon": "preferences-system-windows-script-test",
-        "Id": "myDocker",
+        "Id": "WKDocker",
         "License": "GPL",
-        "Name": "MyDocker"
+        "Name": "WKDocker"
     },
     "X-KDE-ConfigModule": "kcm_kwin4_genericscripted",
     "X-KWin-Border-Activate": "false",
