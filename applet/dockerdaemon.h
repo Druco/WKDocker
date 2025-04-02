@@ -75,20 +75,23 @@ private:
     const char *getSlotCommand(int slotIndex);
     DockedWindow *m_dockedWindows[NUM_SLOTS];
 
-enum Command {
-    ToggleWindowState = 4001,
-    UndockWindow,
-    UndockAll,
-    CloseWindow,
-    SetupAvailable
-};
+    /* The values in this enum must match the constants defined
+       in the 'main.js' file of the kwin script.
+    */
+    enum Command {
+        ToggleWindowState = 4001,
+        UndockWindow,
+        UndockAll,
+        CloseWindow,
+        SetupAvailable
+    };
 
-struct CommandStruct
-{
-    int slotIndex;
-    Command command;
-};
+    struct CommandStruct
+    {
+        int slotIndex;
+        Command command;
+    };
 
-QQueue<CommandStruct> m_commandQueue;
+    QQueue<CommandStruct> m_commandQueue;
 };
 #endif // DOCKERDAEMON_H

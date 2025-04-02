@@ -17,6 +17,18 @@
  * USA.
  */
 
+/*
+ * The DockerDaemon class is the heart of the WKDocker system which also
+ * includes the kwin script that talks to the kwin compositor and the
+ * TrayItem class which handles the SystemTray icon input and output,
+ * one instance for each window (up to 10) docked to the SystemTray.
+ *
+ * The DockerDaemon will typically be spawned at login by autostart
+ * or systemd. It then waits for notification from the kwin script
+ * that the user has requested that a window be docked. It then
+ * spawns a TrayItem instance which creates the actual icon.
+ */
+
 #include "dockerdaemon.h"
 #include "trayitem.h"
 #include "constants.h"
@@ -26,15 +38,27 @@
 
 #define SCRIPT_SERVICE_NAME "org.kde.kglobalaccel"
 
+/* Constructor */
 DockerDaemon::DockerDaemon(QWidget *parent)
     : m_iface(QDBusInterface(SCRIPT_SERVICE_NAME, "/component/kwin"))
 {
     // Setup the DBus connection interface
     auto connection = QDBusConnection::sessionBus();
 
-    // Create a main window but don't "show" it just so the
-    // program won't shut down when the last tray item
-    // goes away
+    // Create a main window. Qt has a flag that allows the last
+    // regular window to be deleted and still keep running
+    // but this doesn't work for QSystemTrayIcon's. If you
+    // delete the last one of these, the main program (i.e.
+    // this daemon) shuts down which is not what we want
+    // because we want to be able to dock a window, undock
+    // the window, and continue on to be able to dock other
+    // windows later. To get around this a QMainWindow
+    // instance is created which has only one purpose -
+    // to be "shown" just before TrayItem is deleted
+    // and "hidden" again immediately thereafter. Hopefully
+    // the user will never even see the flash of the
+    // window being shown but it allows the daemon to
+    // keep functioning.
     m_junk = new(QMainWindow);
 
     if (!connection.isConnected()) {
@@ -52,12 +76,20 @@ DockerDaemon::DockerDaemon(QWidget *parent)
     QDBusConnection::sessionBus().registerObject("/docker", this, QDBusConnection::ExportScriptableContents);
 }
 
+// Deconstructor
 DockerDaemon::~DockerDaemon()
 {
     QDBusConnection::sessionBus().unregisterObject("/docker");
     QDBusConnection::sessionBus().unregisterService("org.andtru.wkdocker");
 }
 
+/*
+ * addNewWindow
+ * In response to a DBus call from the kwin script, setup the applet configuration
+ * from saved configuration file and/or system defaults and spawn an instance of
+ * TrayItem to provide the SystemTray icon and user I/O. Then update the configuration
+ * to the kwin script so it knows how to react.
+ */
 void DockerDaemon::addNewWindow(int slotIndex, QString windowName, QString windowTitle)
 {
     if (slotIndex == ALREADY_DOCKED) {
@@ -80,6 +112,7 @@ void DockerDaemon::addNewWindow(int slotIndex, QString windowName, QString windo
     updateConfiguration(slotIndex);
 }
 
+// Handle an updateConfiguration call from the kwin script
 void DockerDaemon::updateConfiguration(int slotIndex)
 {
     if (m_iface.isValid()) {
@@ -90,6 +123,7 @@ void DockerDaemon::updateConfiguration(int slotIndex)
     }
 }
 
+// Handle a requestCommand from the kwin script.
 void DockerDaemon::requestCommand(int &slotIndex, int &command) {
     if (!m_commandQueue.isEmpty()) {
         struct CommandStruct commandStruct = m_commandQueue.dequeue();
@@ -100,6 +134,7 @@ void DockerDaemon::requestCommand(int &slotIndex, int &command) {
     }
 };
 
+// Handle a request for setup configuration from the kwin script
 void DockerDaemon::requestSetup(int slotIndexIn,
                                 int &slotIndexOut,
                                 bool &skipPager,
@@ -118,11 +153,16 @@ void DockerDaemon::requestSetup(int slotIndexIn,
     currentConfig->getConfigItem(STICKY_KEY, sticky);
 }
 
-// BAA - In case we need to keep track for some reason in the future
+// Possible future enhancement - In case we need to keep track for some reason in the future
 void DockerDaemon::onManualMinimizeChange(int slotIndex, bool minimized)
 {
 }
 
+/*
+ * onClientClosed
+ * Shut down and delete artifacts for a window when the user
+ * closes it
+ */
 void DockerDaemon::onClientClosed(int slotIndex)
 {
     DockedWindow *currentWindow = m_dockedWindows[slotIndex];
@@ -137,18 +177,36 @@ void DockerDaemon::onClientClosed(int slotIndex)
     m_dockedWindows[slotIndex] = NULL;
 }
 
+/*
+ * onCaptionChanged
+ * Notify the TrayItem instance when the caption (window title)
+ * changes, so it can update the tooltip and possibly put up
+ * a temporary notification window (if the 'Balloon on Title Changes'
+ * flag is set.
+ */
 void DockerDaemon::onCaptionChanged(int slotIndex, QString newTitle)
 {
     m_dockedWindows[slotIndex]->item->changeWindowTitle(newTitle);
 }
 
-
+/*
+ * toggleHideShow
+ * Notify the kwin script to iconify or activate
+ * the window (depending on whether it is currently
+ * active or not.
+ */
 void DockerDaemon::toggleHideShow(int slotIndex)
 {
     m_commandQueue.enqueue( {slotIndex, ToggleWindowState});
     m_iface.call("invokeShortcut", "dockerCommandAvailable");
 }
 
+/*
+ * doUndock
+ * Clean up config data, remove the TrayItem instance, and
+ * notify the kwin script when the user requests that the
+ * window be undocked.
+ */
 void DockerDaemon::doUndock(int slotIndex)
 {
     DockedWindow *currentWindow = m_dockedWindows[slotIndex];
@@ -174,6 +232,11 @@ void DockerDaemon::doUndockAll()
     }
 }
 
+/*
+ * closeWindow
+ * Notify the kwin script that the user wants
+ * to close the window.
+ */
 void DockerDaemon::closeWindow(int slotIndex)
 {
     m_commandQueue.enqueue({slotIndex, CloseWindow});

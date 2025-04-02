@@ -17,10 +17,17 @@
  * USA.
  */
 
+/* These four constants must match those defined in 'constants.h'
+   in the applet directory
+*/
 const NUM_SLOTS = 10;
 const ALREADY_DOCKED = -1;
 const SLOTS_FULL = -2;
 const NOT_NORMAL_WINDOW = -3;
+
+/* These constants must match the values in the Command enum as
+   defined in 'dockerdaemon.h' in the applet source code.
+*/
 const TOGGLE_WINDOW_STATE = 4001;
 const UNDOCK_WINDOW       = 4002;
 const UNDOCK_ALL          = 4003;
@@ -33,6 +40,20 @@ var currentClientIndex = -1;
 var returnval = "default";
 var q1 = 0;
 
+/* dockerCommandAvailable requests a command from the applet.
+   In a perfect world, the applet could just send a command
+   to the kwin script but it appears that the only way to
+   send an asynchronous message to a kwin script is by using
+   simulated hotkey command on the DBus and even then, it
+   can only send the hotkey without any parameters.
+
+   In order to avoid requiring a dozen different hotkeys
+   defined (which would never be used by a user directly),
+   only one was defined which tells the kwin script that
+   a command is available and it can then request the
+   actual command along with any necessary parameters
+   via DBus calls.
+*/
 function dockerCommandAvailable()
 {
     callDBus("org.andtru.wkdocker",
@@ -43,6 +64,7 @@ function dockerCommandAvailable()
             );
 }
 
+/* Process the command received from the applet */
 function processCommand(slotIndex, command)
 {
     currentClientIndex = slotIndex;
@@ -65,7 +87,11 @@ function processCommand(slotIndex, command)
    }
 }
     
-
+/* Called (eventually) after the user clicks on the icon in the
+   system tray. Activates the window and brings it to the top
+   when it isn't. If the window is active and on top, it
+   iconifies it back to the system tray.
+*/
 function toggleWindowState(slotIndex)
 {
     var currentDesktop = workspace.currentDesktop;
@@ -117,6 +143,11 @@ function toggleWindowState(slotIndex)
     }
 }
 
+/* Called when the user selects "Undock Window" from the context
+   menu of the system tray icon. Removes the window from control
+   of the application and if currently iconified, it restores
+   the window to the desktop.
+*/
 function undockWindow(slotIndex)
 {
     if (clientValid[slotIndex] == true) {
@@ -131,6 +162,9 @@ function undockWindow(slotIndex)
     }
 }
 
+/* When commanded by the applet, requests the current setup
+   and stores it to local storage.
+*/
 function getAvailableSetup(slotIndex)
 {
     callDBus("org.andtru.wkdocker",
@@ -167,10 +201,11 @@ function getAvailableSetup(slotIndex)
              )
 }
              
-    
-// Second version of pick window. Does not require SetSlot to be called
-// first, it just finds the next available slot and uses it. Picks
-// active window
+/* This is the only function directly tied to a hotkey that will actually
+   have a keyboard shortcut assigned to it. pickWindow() selects the
+   currently active window and adds it to the docker system, notifying the
+   applet that a new window has been added and sets up local storage.
+*/   
 function pickWindow()
 {
     var selectedWindow = workspace.activeWindow;
@@ -264,6 +299,10 @@ function pickWindow()
              "addNewWindow", SLOTS_FULL, selectedWindow.resourceClass);
 }
 
+/* Callback initiated when a user manually minimizes a window from the
+   title bar. The applet is notified which allows the Iconify on Minimize
+   functionality.
+*/
 function onMinimize()
 {
     //Find if one of our windows has changed
@@ -278,15 +317,19 @@ function onMinimize()
                 testWindow.skipTaskbar = clientList[i]["SkipTaskBar"];
                 testWindow.skipPager = clientList[i]["SkipPager"];
             }
-
-//            callDBus("org.andtru.menutest", 
-//                     "/docker", 
-//                     "com.wkdocker.wkdocker.DockerDaemon", 
-//                     "onManualMinizeChange", i, testWindow.minimized);
         }
     }
 }
 
+/* Callbacks initiated when a user manually closes a window from the
+   title bar. The applet is notified, so that the window can be
+   removed from applet control.
+
+   Multiple functions are used because it is apparently impossible to
+   determine which window generated the signal, so a separate callback
+   is defined for each of the 10 windows being handled by the
+   docker system.
+*/
 function onClose0() {onClose(0);}
 function onClose1() {onClose(1);}
 function onClose2() {onClose(2);}
@@ -309,6 +352,15 @@ function onClose(slotIndex)
              currentClientIndex);
 }
 
+/* Callbacks initiated when the caption (title in the title
+   bar) changes. Used to update the tooltip and (if enabled)
+   pop up the "balloon" dialog.
+
+   Multiple functions are used because it is apparently impossible to
+   determine which window generated the signal, so a separate callback
+   is defined for each of the 10 windows being handled by the
+   docker system.
+*/
 function onCaptionChanged0() {onCaptionChanged(0);}
 function onCaptionChanged1() {onCaptionChanged(1);}
 function onCaptionChanged2() {onCaptionChanged(2);}
@@ -331,6 +383,9 @@ function onCaptionChanged(slotIndex)
             );
 }
 
+/* Called after the user selects Undock All from
+   the system tray icon's context menu.
+*/
 function undockAll()
 {
     for (var i = 0; i < NUM_SLOTS; ++i) {
@@ -339,11 +394,13 @@ function undockAll()
     }
 }
 
-// Close a window
+/* Close a window by selecting the option from the
+   context menu.
+*/
 function closeWindow(slotIndex)
 {
     clientList[slotIndex]["WindowID"].closeWindow();
 }
 
-registerShortcut("pickWindow", "pickWindow", "Meta+Shift+P", pickWindow);
+registerShortcut("dockerPickWindow", "dockerPickWindow", "Meta+Shift+P", pickWindow);
 registerShortcut("dockerCommandAvailable", "dockerCommandAvailable", "", dockerCommandAvailable)

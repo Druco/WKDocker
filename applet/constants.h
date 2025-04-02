@@ -22,6 +22,9 @@
 
 #include <QObject>
 
+/* These four constants must match those defined in the
+   'main.js' file in the kwin script
+*/
 #define NUM_SLOTS 10
 #define ALREADY_DOCKED -1
 #define SLOTS_FULL -2
