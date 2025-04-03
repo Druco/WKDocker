@@ -108,6 +108,7 @@ void DockerDaemon::addNewWindow(int slotIndex, QString windowName, QString windo
     currentWindow->config = new ConfigSettings(m_configFile, windowName);
     currentWindow->item = new TrayItem(this, slotIndex, windowName, windowTitle, currentWindow->config);
     m_dockedWindows[slotIndex] = currentWindow;
+    connect(currentWindow->item, SIGNAL(about()), this, SLOT(about()));
 
     updateConfiguration(slotIndex);
 }
@@ -242,3 +243,17 @@ void DockerDaemon::closeWindow(int slotIndex)
     m_commandQueue.enqueue({slotIndex, CloseWindow});
     m_iface.call("invokeShortcut", "dockerCommandAvailable");
 }
+
+void DockerDaemon::about()
+{
+    QMessageBox aboutBox;
+
+    aboutBox.setIconPixmap(QPixmap(":/images/kdocker.png"));
+    aboutBox.setWindowTitle(tr("About %1 - %2").arg(qApp->applicationName()).arg(qApp->applicationVersion()));
+    aboutBox.setText(Constants::ABOUT_MESSAGE);
+    aboutBox.setInformativeText(tr("See %1 for more information.").arg("<a href=\"https://github.com/user-none/KDocker\">https://github.com/user-none/KDocker</a>"));
+
+    aboutBox.setStandardButtons(QMessageBox::Ok);
+    aboutBox.exec();
+}
+

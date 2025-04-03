@@ -69,6 +69,9 @@ public:
     void doUndockAll();
     void closeWindow(int slotIndex);
 
+public slots:
+    void about();
+
 private:
     QSettings m_configFile;
     QDBusInterface m_iface;
