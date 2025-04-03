@@ -64,13 +64,13 @@ public:
     Q_SCRIPTABLE void onCaptionChanged(int slotIndex, QString newTitle);
     Q_SCRIPTABLE void requestCommand(int &slotIndex, int &command);
 
-    void updateConfiguration(int slotIndex);
     void doUndock(int slotIndex);
     void doUndockAll();
     void closeWindow(int slotIndex);
 
 public slots:
     void about();
+    void updateConfiguration(int slotIndex);
 
 private:
     QSettings m_configFile;

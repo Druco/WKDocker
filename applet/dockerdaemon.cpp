@@ -109,6 +109,7 @@ void DockerDaemon::addNewWindow(int slotIndex, QString windowName, QString windo
     currentWindow->item = new TrayItem(this, slotIndex, windowName, windowTitle, currentWindow->config);
     m_dockedWindows[slotIndex] = currentWindow;
     connect(currentWindow->item, SIGNAL(about()), this, SLOT(about()));
+    connect(currentWindow->item, SIGNAL(updateConfiguration(int)), this, SLOT(updateConfiguration(int)));
 
     updateConfiguration(slotIndex);
 }

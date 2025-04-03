@@ -101,6 +101,7 @@ private slots:
 signals:
     void undock(TrayItem*);
     void about();
+    void updateConfiguration(int);
 
 private:
     int  nonZeroBalloonTimeout();

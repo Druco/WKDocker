@@ -132,35 +132,35 @@ void TrayItem::setSkipTaskbar(bool value)
 {
     m_actionSkipTaskbar->setChecked(value);
     m_configFile->setConfigItem(SKIP_TASKBAR_KEY, value);
-    m_parent->updateConfiguration(m_slotIndex);
+    emit(updateConfiguration(m_slotIndex));
 }
 
 void TrayItem::setSkipPager(bool value)
 {
     m_actionSkipPager->setChecked(value);
     m_configFile->setConfigItem(SKIP_PAGER_KEY, value);
-    m_parent->updateConfiguration(m_slotIndex);
+    emit(updateConfiguration(m_slotIndex));
 }
 
 void TrayItem::setSticky(bool value)
 {
     m_actionSticky->setChecked(value);
     m_configFile->setConfigItem(STICKY_KEY, value);
-    m_parent->updateConfiguration(m_slotIndex);
+    emit(updateConfiguration(m_slotIndex));
 }
 
 void TrayItem::setIconifyMinimized(bool value)
 {
     m_actionIconifyMinimized->setChecked(value);
     m_configFile->setConfigItem(ICONIFY_IF_MINIMIZED_KEY, value);
-    m_parent->updateConfiguration(m_slotIndex);
+    emit(updateConfiguration(m_slotIndex));
 }
 
 void TrayItem::setLockToDesktop(bool value)
 {
     m_actionLockToDesktop->setChecked(value);
     m_configFile->setConfigItem(LOCK_TO_DESKTOP_KEY, value);
-    m_parent->updateConfiguration(m_slotIndex);
+    emit(updateConfiguration(m_slotIndex));
 }
 
 #if 0
