@@ -75,13 +75,12 @@ class TrayItem : public QSystemTrayIcon
     Q_OBJECT
 
 public:
-    TrayItem(DockerDaemon *parent, int slotNumber, QString windowName, QString windowTitle, ConfigSettings *configFile);
+    TrayItem(int slotNumber, QString windowName, QString windowTitle, ConfigSettings *configFile);
     ~TrayItem();
 
     void changeWindowTitle(QString newTitle);
 
 public slots:
-    void closeWindow();
     void setCustomIcon(QString path);
     void selectCustomIcon(bool value);
     void setSkipTaskbar(bool value);
@@ -94,14 +93,17 @@ public slots:
 private slots:
     void toggleWindow();
     void doUndock();
-    void undockAll();
     void saveSettingsGlobal();
     void saveSettingsApp();
+    void closeWindow();
 
 signals:
-    void undock(TrayItem*);
+    void doUndock(int);
+    void toggleHideShow(int);
+    void doUndockAll();
     void about();
     void updateConfiguration(int);
+    void closeWindow(int);
 
 private:
     int  nonZeroBalloonTimeout();

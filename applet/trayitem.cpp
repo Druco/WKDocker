@@ -26,8 +26,8 @@
 
 #include "trayitem.h"
 
-TrayItem::TrayItem(DockerDaemon *parent, int slotIndex, QString windowName, QString windowTitle, ConfigSettings *configFile) :
-    m_configFile(configFile), m_parent(parent)
+TrayItem::TrayItem(int slotIndex, QString windowName, QString windowTitle, ConfigSettings *configFile) :
+    m_configFile(configFile)
 {
     m_customIcon = false;
     m_slotIndex = slotIndex;
@@ -84,11 +84,12 @@ void TrayItem::saveSettingsApp()
     m_configFile->saveSettingsApp();
 }
 
+#if 0
 void TrayItem::closeWindow()
 {
-    m_parent->closeWindow(m_slotIndex);
+    emit(closeWindow(m_slotIndex));
 }
-
+#endif
 
 void TrayItem::setCustomIcon(QString path)
 {
@@ -184,17 +185,12 @@ void TrayItem::setBalloonOnTitleChange(bool value)
 
 void TrayItem::toggleWindow()
 {
-    m_parent->toggleHideShow(m_slotIndex);
+    emit(toggleHideShow(m_slotIndex));
 }
 
 void TrayItem::doUndock()
 {
-    m_parent->doUndock(m_slotIndex);
-}
-
-void TrayItem::undockAll()
-{
-    m_parent->doUndockAll();
+    emit(doUndock(m_slotIndex));
 }
 
 /*
@@ -289,7 +285,7 @@ void TrayItem::createContextMenu()
 
     m_optionsMenu->addMenu(m_defaultsMenu);
 
-    m_contextMenu->addAction(tr("Undock All"), this, SLOT(undockAll()));
+    m_contextMenu->addAction(tr("Undock All"), this, SIGNAL(doUndockAll()));
     m_contextMenu->addSeparator();
 //    m_actionToggle = new QAction(tr("Toggle"), m_contextMenu);
 //    connect(m_actionToggle, SIGNAL(triggered()), this, SLOT(toggleWindow()));
@@ -306,3 +302,7 @@ void TrayItem::changeWindowTitle(QString newTitle)
     updateTitle();
 }
 
+void TrayItem::closeWindow()
+{
+    emit(closeWindow(m_slotIndex));
+}

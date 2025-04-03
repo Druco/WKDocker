@@ -46,7 +46,6 @@ class DockerDaemon : public QObject
 public:
     DockerDaemon(QWidget *parent = nullptr);
     ~DockerDaemon();
-    void toggleHideShow(int slotIndex);
 
     QMainWindow *m_junk;
 
@@ -64,13 +63,14 @@ public:
     Q_SCRIPTABLE void onCaptionChanged(int slotIndex, QString newTitle);
     Q_SCRIPTABLE void requestCommand(int &slotIndex, int &command);
 
-    void doUndock(int slotIndex);
-    void doUndockAll();
-    void closeWindow(int slotIndex);
 
 public slots:
     void about();
     void updateConfiguration(int slotIndex);
+    void closeWindow(int slotIndex);
+    void doUndockAll();
+    void doUndock(int slotIndex);
+    void toggleHideShow(int slotIndex);
 
 private:
     QSettings m_configFile;
