@@ -36,7 +36,6 @@ TrayItem::TrayItem(int slotIndex, QString windowName, QString windowTitle, Confi
     m_windowTitle = windowTitle;
 
     updateTitle();
-//     updateIcon();
 
     createContextMenu();
     this->show();
@@ -83,13 +82,6 @@ void TrayItem::saveSettingsApp()
 {
     m_configFile->saveSettingsApp();
 }
-
-#if 0
-void TrayItem::closeWindow()
-{
-    emit(closeWindow(m_slotIndex));
-}
-#endif
 
 void TrayItem::setCustomIcon(QString path)
 {
@@ -163,17 +155,6 @@ void TrayItem::setLockToDesktop(bool value)
     m_configFile->setConfigItem(LOCK_TO_DESKTOP_KEY, value);
     emit(updateConfiguration(m_slotIndex));
 }
-
-#if 0
-void TrayItem::setBalloonTimeout(int value)
-{
-    if (value < 0) {
-        value = 0;
-    }
-    m_settings.iBalloonTimeout = value;
-    m_actionBalloonTitleChanges->setChecked(value ? true : false);
-}
-#endif
 
 void TrayItem::setBalloonOnTitleChange(bool value)
 {
@@ -287,9 +268,7 @@ void TrayItem::createContextMenu()
 
     m_contextMenu->addAction(tr("Undock All"), this, SIGNAL(doUndockAll()));
     m_contextMenu->addSeparator();
-//    m_actionToggle = new QAction(tr("Toggle"), m_contextMenu);
-//    connect(m_actionToggle, SIGNAL(triggered()), this, SLOT(toggleWindow()));
-//    m_contextMenu->addAction(m_actionToggle);
+
     m_contextMenu->addAction(tr("Undock"), this, SLOT(doUndock()));
     m_contextMenu->addAction(QIcon(":/images/close.png"), tr("Close"), this, SLOT(closeWindow()));
 
