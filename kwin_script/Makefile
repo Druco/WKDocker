@@ -1,3 +1,10 @@
 
-Docker.kwinscript: kwin_script/contents/code kwin_script/metadata.json
-	zip  Docker.kwinscript kwin_script/metadata.json kwin_script/contents/code/main.js
+FILES	= wkdocker/contents/code/main.js wkdocker/metadata.json
+INSTALL_DIR = /usr/share/kwin/scripts
+
+Docker.kwinscript: ${FILES}
+	rm -f $@
+	zip  $@ ${FILES}
+
+install: Docker.kwinscript
+	unzip -d ${INSTALL_DIR} Docker.kwinscript
