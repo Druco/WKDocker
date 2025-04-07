@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.andtru.wkdocker
+Exec=/usr/local/bin/WKDockerApp
