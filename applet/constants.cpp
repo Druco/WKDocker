@@ -22,6 +22,6 @@
 const QString Constants::APP_NAME    = "WKDocker";
 const QString Constants::ORG_NAME    = "org.andtru";
 const QString Constants::DOM_NAME    = "andtru.org";
-const QString Constants::WEBSITE     = "https://github.com/user-none/WKDocker";
-const QString Constants::APP_VERSION = "0.1";
+const QString Constants::WEBSITE     = "https://github.com/Druco/WKDocker";
+const QString Constants::APP_VERSION = "0.5";
 const QString Constants::ABOUT_MESSAGE = QString("%1 %2\n\n%3").arg(Constants::APP_NAME).arg(Constants::APP_VERSION).arg(Constants::WEBSITE);

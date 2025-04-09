@@ -35,17 +35,21 @@ https://github.com/Druco/WKDocker
 ### From source
 
 To build the KWin script
+```sh
 $ cd <top level directory>
 $ cd kwin_script
 $ make
+```
 
 To build the daemon
+```sh
 $ cd <top level directory>
 $ cd applet
 $ mkdir build
 $ cd build
 $ cmake ..
 $ make
+```
 
 For test purposes the application can now be run directly
 from the build directories. Using KDE system settings, go to
@@ -56,8 +60,10 @@ It should now be listed under the available scripts and can
 be enabled.
 
 Then in a shell window, 
+```sh
 $ cd <top level directory>/applet/build
 $ ./WKDocker
+```
 
 Now press Meta+Shift+P and the window that is currently active
 should be docked. Left clicking on the new system tray icon
