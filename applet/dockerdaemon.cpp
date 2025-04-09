@@ -45,6 +45,22 @@ DockerDaemon::DockerDaemon(QWidget *parent)
     // Setup the DBus connection interface
     auto connection = QDBusConnection::sessionBus();
 
+    // Create a main window. Qt has a flag that allows the last
+    // regular window to be deleted and still keep running
+    // but this doesn't work for QSystemTrayIcon's. If you
+    // delete the last one of these, the main program (i.e.
+    // this daemon) shuts down which is not what we want
+    // because we want to be able to dock a window, undock
+    // the window, and continue on to be able to dock other
+    // windows later. To get around this a QMainWindow
+    // instance is created which has only one purpose -
+    // to be "shown" just before TrayItem is deleted
+    // and "hidden" again immediately thereafter. Hopefully
+    // the user will never even see the flash of the
+    // window being shown but it allows the daemon to
+    // keep functioning.
+    m_junk = new(QMainWindow);
+
     if (!connection.isConnected()) {
         qWarning("Cannot connect to the D-Bus session bus.\n"
                  "To start it, run:\n"
@@ -160,7 +176,9 @@ void DockerDaemon::onClientClosed(int slotIndex)
     if (currentWindow == NULL)
         return;
     delete currentWindow->config;
+    m_junk->show();
     delete currentWindow->item;
+    m_junk->hide();
     delete currentWindow;
     m_dockedWindows[slotIndex] = NULL;
 }
@@ -203,7 +221,9 @@ void DockerDaemon::doUndock(int slotIndex)
         m_iface.call("invokeShortcut", "dockerCommandAvailable");
 
         delete currentWindow->config;
+        m_junk->show();
         delete currentWindow->item;
+        m_junk->hide();
         delete currentWindow;
         m_dockedWindows[slotIndex] = NULL;
     }

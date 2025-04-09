@@ -17,12 +17,14 @@ at any one time.
 ## How To Use
 WKDocker consists of two parts, the WKDockerApp daemon and
 the wkdocker KWin script. The daemon is a user level app
-that is set up to be started by the dbus autostart feature.
-When the user attempts to dock the first window, the KWin
-script makes a dbus call which then starts the daemon
+so it can be started from the command line but should 
+typically be started as a user autostart so it is available 
+on login.
 
-Windows are docked using a KWin HotKey (by default 
-Meta+Shift+P).
+Once the daemon is running, hitting the 'dockerPickWindow'
+HotKey (default is Meta+Shift+P) will cause the active
+window to be docked.
+
 ## Project home
 
 https://github.com/Druco/WKDocker
@@ -36,7 +38,6 @@ To build the KWin script
 $ cd <top level directory>
 $ cd kwin_script
 $ make
-$ sudo make install
 
 To build the daemon
 $ cd <top level directory>
@@ -45,11 +46,18 @@ $ mkdir build
 $ cd build
 $ cmake ..
 $ make
-$ sudo make install
 
-Using KDE system settings, go to
-Window Management->KWin Scripts,
-and enable the WKDocker script.
+For test purposes the application can now be run directly
+from the build directories. Using KDE system settings, go to
+Window Management->KWin Scripts, click on 'Install from File...'
+and in the file selection dialog, maneuver to
+<top level directory>/kwin_script and select 'Docker.kwinscript'.
+It should now be listed under the available scripts and can 
+be enabled.
+
+Then in a shell window, 
+$ cd <top level directory>/applet/build
+$ ./WKDocker
 
 Now press Meta+Shift+P and the window that is currently active
 should be docked. Left clicking on the new system tray icon
@@ -61,3 +69,10 @@ menu which allows for the setting of a few configuration items
 as well as undocking the window or closing the window. This menu
 should look familiar to anyone who has used KDocker just with
 fewer options.
+
+*IMPORTANT*: Close all previous instances of WKDocker that are running before running
+a new build. WKDocker is a single instance application.
+
+To do a system wide install, simply go to the 'kwin_script' 
+and the 'applet/build' directory and do a 'sudo make install'
+in each.
