@@ -47,8 +47,6 @@ public:
     DockerDaemon(QWidget *parent = nullptr);
     ~DockerDaemon();
 
-    QMainWindow *m_junk;
-
     Q_SCRIPTABLE void addNewWindow(int slotIndex, QString windowName, QString windowTitle);
     Q_SCRIPTABLE void requestSetup(int slotIndexIn,
                                   int &slotIndexOut,

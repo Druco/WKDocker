@@ -11,6 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Widgets Gui)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui DBus)
+
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+include(KDEInstallDirs)
+
 INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Widgets_INCLUDE_DIRS})
 
 add_executable(WKDockerApp
@@ -35,3 +40,7 @@ install(TARGETS WKDockerApp
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+configure_file(dbus-service/org.andtru.wkdocker.service.in
+               ${CMAKE_CURRENT_BINARY_DIR}/org.andtru.wkdocker.service)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.andtru.wkdocker.service
+        DESTINATION ${KDE_INSTALL_DBUSSERVICEDIR})
