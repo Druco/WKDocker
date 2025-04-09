@@ -1,5 +1,5 @@
 
-FILES	= WKDocker/contents/code/main.js WKDocker/metadata.json
+FILES	= wkdocker/contents/code/main.js wkdocker/metadata.json
 INSTALL_DIR = /usr/share/kwin/scripts
 
 Docker.kwinscript: ${FILES}
